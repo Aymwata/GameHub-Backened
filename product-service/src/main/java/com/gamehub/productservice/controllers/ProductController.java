@@ -28,4 +28,9 @@ public class ProductController {
     public ResponseEntity<List<ProductoResponseDTO>> obtenerTodos() {
         return ResponseEntity.ok(service.obtenerTodos());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductoResponseDTO> obtenerProducto(@PathVariable Long id) {
+        return ResponseEntity.ok(service.obtenerPorId(id));
+    }
 }

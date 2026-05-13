@@ -66,4 +66,10 @@ public class ProductService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+
+    public ProductoResponseDTO obtenerPorId(Long id) {
+        Product producto = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
+        return mapToDTO(producto);
+    }
 }
