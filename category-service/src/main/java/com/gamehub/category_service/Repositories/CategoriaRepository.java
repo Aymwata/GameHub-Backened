@@ -9,4 +9,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     // Al heredar de JpaRepository, Spring Boot nos regala el CRUD completo:
     // save(), findAll(), findById(), deleteById()
     // No tienes que escribir NADA de código SQL.
+
 }
+
