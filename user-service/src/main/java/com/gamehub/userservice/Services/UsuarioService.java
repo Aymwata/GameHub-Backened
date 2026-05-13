@@ -66,4 +66,10 @@ public class UsuarioService {
         usuario.setEstado(false);
         return usuarioRepository.save(usuario);
     }
+
+    public Usuario buscarPorEmail(String email) {
+        log.info("Buscando usuario por email: {}", email);
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con el email: " + email));
+    }
 }

@@ -55,4 +55,10 @@ public class UsuarioController {
     public ResponseEntity<Usuario> desactivarUsuario(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.desactivarUsuario(id));
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Usuario> buscarPorEmail(@RequestParam String email) {
+        // Usamos el método que ya existe en el service
+        return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
+    }
 }
