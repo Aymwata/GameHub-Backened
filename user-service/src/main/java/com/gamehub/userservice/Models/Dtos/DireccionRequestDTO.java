@@ -22,4 +22,4 @@ public class DireccionRequestDTO {
     @NotBlank(message = "El número es obligatorio")
     private String numero;
 }
-}
+

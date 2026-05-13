@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 // Le indicamos la URL donde está corriendo el user-service
-@FeignClient(name = "user-service", url = "http://localhost:8082/api/usuarios")
+@FeignClient(name = "user-service", url = "http://localhost:8080/api/usuarios")
 public interface UserClient {
 
     // Espejamos el endpoint que busca usuarios en el user-service
