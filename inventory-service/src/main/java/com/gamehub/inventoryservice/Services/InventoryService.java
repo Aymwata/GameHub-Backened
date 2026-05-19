@@ -70,11 +70,13 @@ public class InventoryService {
         try {
             productClient.getProductoById(productId);
         } catch (Exception e) {
-            log.error("El producto con ID {} no fue localizado en el servicio de catálogo.", productId);
-            throw new RuntimeException("Violación de integridad: El producto no existe en el catálogo maestro.");
+            // Le decimos a la consola de IntelliJ que nos muestre toda la sangre del error
+            log.error("Error real al comunicarse con Product-Service: ", e);
+
+            // Le pegamos el mensaje de error de Feign a tu respuesta para leerlo en PowerShell
+            throw new RuntimeException("Fallo en Feign: " + e.getMessage());
         }
     }
-
     private void mapearDatosInventario(Inventory inventory, InventoryRequestDTO dto) {
         inventory.setProductId(dto.getProductId());
         inventory.setStockAvailable(dto.getQuantity());
@@ -82,4 +84,5 @@ public class InventoryService {
         inventory.setLocation(dto.getLocation());
         inventory.setMinStock(5); // Umbral de stock crítico por defecto
     }
+
 }

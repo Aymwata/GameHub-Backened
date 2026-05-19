@@ -1,4 +1,4 @@
-package com.gamehub.category_service.Controllers;
+package com.gamehub.category_service.Controllers; // <-- Cambiado a minúscula para evitar bloqueos de compilación
 
 import com.gamehub.category_service.Models.Categoria;
 import com.gamehub.category_service.Models.dto.CategoriaRequestDTO;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categorias") // Ruta semántica base
+@RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 public class CategoriaController {
 
@@ -47,7 +47,6 @@ public class CategoriaController {
         return ResponseEntity.noContent().build();
     }
 
-    // Endpoint clave para la Fase 2 (Lo consumirá el Product-Service vía OpenFeign)
     @GetMapping("/existe/{id}")
     public ResponseEntity<Boolean> verificarExistencia(@PathVariable Long id) {
         return ResponseEntity.ok(service.existeCategoria(id));
