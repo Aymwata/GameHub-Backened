@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productos") // Ruta base para productos
+@RequestMapping("/api/products") // Ruta base para productos
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -27,5 +27,10 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductoResponseDTO>> obtenerTodos() {
         return ResponseEntity.ok(service.obtenerTodos());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductoResponseDTO> obtenerProducto(@PathVariable Long id) {
+        return ResponseEntity.ok(service.obtenerPorId(id));
     }
 }

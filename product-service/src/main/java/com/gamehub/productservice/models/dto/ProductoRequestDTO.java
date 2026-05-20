@@ -10,15 +10,17 @@ public class ProductoRequestDTO {
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
+    @NotBlank(message = "La marca es obligatoria")
+    private String marca;
+
+    @NotBlank(message = "El modelo es obligatorio")
+    private String modelo;
+
     private String descripcion;
 
     @NotNull(message = "El precio es obligatorio")
     @Min(value = 0, message = "El precio no puede ser negativo")
     private Double precio;
-
-    @NotNull(message = "El stock es obligatorio")
-    @Min(value = 0, message = "El stock no puede ser negativo")
-    private Integer stock;
 
     @NotNull(message = "El ID de la categoría es obligatorio")
     private Long categoriaId;
