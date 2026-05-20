@@ -152,4 +152,16 @@ public class InventoryService {
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Consulta el estado actual del inventario para un producto específico.
+     */
+    public InventoryResponseDTO obtenerStockPorProducto(Long productId) {
+        log.info("Consultando stock actual para el Producto ID: {}", productId);
+
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new RuntimeException("No se encontró registro de inventario para el producto: " + productId));
+
+        return mapToResponseDTO(inventory);
+    }
 }

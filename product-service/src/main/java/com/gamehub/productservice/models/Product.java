@@ -19,17 +19,17 @@ public class Product {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(nullable = false)
+    private String marca; // Añadido por rúbrica
+
+    @Column(nullable = false)
+    private String modelo; // Añadido por rúbrica
+
     private String descripcion;
 
     @Column(nullable = false)
     private Double precio;
 
-    @Column(nullable = false)
-    private Integer stock;
-
-    // ¡ATENCIÓN A ESTO PARA TU DEFENSA!
-    // No usamos @ManyToOne porque la Categoría está en OTRA base de datos.
-    // Solo guardamos el ID como referencia.
     @Column(name = "categoria_id", nullable = false)
     private Long categoriaId;
 

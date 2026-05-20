@@ -6,7 +6,7 @@ import lombok.Data;
 @Entity
 @Table(name = "inventories")
 @Data
-public class Inventory {
+public class Inventory extends Audit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

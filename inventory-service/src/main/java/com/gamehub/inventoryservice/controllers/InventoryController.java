@@ -49,4 +49,9 @@ public class InventoryController {
     public ResponseEntity<List<MovimientoResponseDTO>> verHistorial(@PathVariable Long productId) {
         return ResponseEntity.ok(inventoryService.obtenerHistorialMovimientos(productId));
     }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<InventoryResponseDTO> consultarStock(@PathVariable Long productId) {
+        return ResponseEntity.ok(inventoryService.obtenerStockPorProducto(productId));
+    }
 }
