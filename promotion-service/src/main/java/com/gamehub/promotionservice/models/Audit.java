@@ -1,4 +1,4 @@
-package com.gamehub.authservice.Models;
+package com.gamehub.authservice.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
