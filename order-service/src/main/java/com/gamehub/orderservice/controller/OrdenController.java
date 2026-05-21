@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ordenes")
+@RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrdenController {
 
@@ -40,15 +40,16 @@ public class OrdenController {
     }
 
     // 4. Actualizar estado
-    @PatchMapping("/{id}/estado")
+// 4. Actualizar estado (Versión Blindada)
+    @PutMapping("/{id}/status")
     public ResponseEntity<Orden> actualizarEstado(
-            @PathVariable Long id,
-            @RequestParam String nuevoEstado) {
-        return ResponseEntity.ok(ordenService.actualizarEstado(id, nuevoEstado));
+            @PathVariable("id") Long id,
+            @RequestParam("estado") String estado) {
+        return ResponseEntity.ok(ordenService.actualizarEstado(id, estado));
     }
 
     // 5. Cancelar orden
-    @PatchMapping("/{id}/cancelar")
+    @PutMapping("/{id}/cancel")
     public ResponseEntity<Orden> cancelarOrden(@PathVariable Long id) {
         return ResponseEntity.ok(ordenService.cancelarOrden(id));
     }

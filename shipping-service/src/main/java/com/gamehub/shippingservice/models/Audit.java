@@ -1,4 +1,4 @@
-package com.gamehub.promotionservice.models;
+package com.gamehub.shippingservice.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
