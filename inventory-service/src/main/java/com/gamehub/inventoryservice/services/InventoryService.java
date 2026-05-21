@@ -164,4 +164,12 @@ public class InventoryService {
 
         return mapToResponseDTO(inventory);
     }
+
+    public List<InventoryResponseDTO> obtenerTodosLosInventarios() {
+        log.info("Consultando el listado completo de inventarios");
+
+        return inventoryRepository.findAll().stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
 }

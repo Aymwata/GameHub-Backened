@@ -30,7 +30,7 @@ public class InventoryController {
     }
 
 
-    @PatchMapping("/reserve")
+    @PutMapping("/reserve")
     public ResponseEntity<Map<String, String>> reserve(
             @RequestParam Long productId,
             @RequestParam Integer quantity) {
@@ -54,4 +54,10 @@ public class InventoryController {
     public ResponseEntity<InventoryResponseDTO> consultarStock(@PathVariable Long productId) {
         return ResponseEntity.ok(inventoryService.obtenerStockPorProducto(productId));
     }
+
+    @GetMapping
+    public ResponseEntity<List<InventoryResponseDTO>> listarTodoElInventario() {
+        return ResponseEntity.ok(inventoryService.obtenerTodosLosInventarios());
+    }
+
 }

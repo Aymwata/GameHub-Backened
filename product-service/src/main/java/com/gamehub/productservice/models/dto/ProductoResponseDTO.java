@@ -10,6 +10,7 @@ public class ProductoResponseDTO {
     private String modelo;
     private String descripcion;
     private Double precio;
+    private Boolean estado;
 
     // En lugar de devolver solo un número (categoriaId),
     // devolvemos el objeto espejo con los datos reales de la categoría.

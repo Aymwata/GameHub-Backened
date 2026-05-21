@@ -140,7 +140,11 @@ public class OrdenService {
                 throw new OrdenException("El producto ID " + id + " está inactivo y no puede venderse");
             }
             return producto;
+        } catch (OrdenException oe) {
+            throw oe; // Relanzamos nuestro mensaje de "inactivo"
         } catch (Exception e) {
+            // Esto imprimirá en rojo en tu consola el error REAL (ej: 404, Connection Refused, etc.)
+            log.error("Fallo la comunicación con product-service para el ID {}: {}", id, e.getMessage());
             throw new OrdenException("Error al validar el producto ID " + id);
         }
     }
@@ -192,7 +196,10 @@ public class OrdenService {
             try {
                 inventarioClient.reservarStock(detalle.getProductoId(), detalle.getCantidad());
             } catch (Exception e) {
-                throw new OrdenException("Fallo crítico al intentar reservar el stock en el inventario");
+                // Agregamos el log.error para ver el motivo exacto en la consola
+                log.error("Fallo la comunicación con inventory-service al reservar: {}", e.getMessage());
+                // Concatenamos el mensaje real para verlo también en Postman
+                throw new OrdenException("Fallo crítico al intentar reservar el stock: " + e.getMessage());
             }
         }
     }

@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "promotion-service", url = "http://localhost:8081/api/promotions") // Ajusta el puerto
+@FeignClient(name = "promotion-service", url = "http://localhost:8084/api/promotions") // Ajusta el puerto
 public interface PromocionClient {
     @GetMapping("/codigo/{codigo}")
     PromocionClientDTO obtenerPorCodigo(@PathVariable("codigo") String codigo);

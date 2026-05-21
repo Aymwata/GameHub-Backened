@@ -30,9 +30,10 @@ public class ProductService {
         dto.setDescripcion(producto.getDescripcion());
         dto.setPrecio(producto.getPrecio());
 
+        // ¡AQUÍ ESTÁ LA LÍNEA MÁGICA QUE FALTABA!
+        dto.setEstado(producto.getEstado());
+
         // Llamamos al category-service para obtener los datos reales de la categoría
-        // En un entorno de producción, esto requeriría manejo de Circuit Breaker (ej. Resilience4j)
-        // por si el category-service está caído, pero para esta fase basta con la llamada directa.
         CategoriaClientDTO categoriaDTO = categoryClient.obtenerCategoriaPorId(producto.getCategoriaId());
         dto.setCategoria(categoriaDTO);
 
