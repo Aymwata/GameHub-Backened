@@ -6,9 +6,11 @@ import lombok.Data;
 public class ProductoResponseDTO {
     private Long id;
     private String nombre;
+    private String marca;
+    private String modelo;
     private String descripcion;
     private Double precio;
-    private Integer stock;
+    private Boolean estado;
 
     // En lugar de devolver solo un número (categoriaId),
     // devolvemos el objeto espejo con los datos reales de la categoría.

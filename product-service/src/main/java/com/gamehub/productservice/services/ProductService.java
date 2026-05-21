@@ -25,13 +25,15 @@ public class ProductService {
         ProductoResponseDTO dto = new ProductoResponseDTO();
         dto.setId(producto.getId());
         dto.setNombre(producto.getNombre());
+        dto.setMarca(producto.getMarca());
+        dto.setModelo(producto.getModelo());
         dto.setDescripcion(producto.getDescripcion());
         dto.setPrecio(producto.getPrecio());
-        dto.setStock(producto.getStock());
+
+        // ¡AQUÍ ESTÁ LA LÍNEA MÁGICA QUE FALTABA!
+        dto.setEstado(producto.getEstado());
 
         // Llamamos al category-service para obtener los datos reales de la categoría
-        // En un entorno de producción, esto requeriría manejo de Circuit Breaker (ej. Resilience4j)
-        // por si el category-service está caído, pero para esta fase basta con la llamada directa.
         CategoriaClientDTO categoriaDTO = categoryClient.obtenerCategoriaPorId(producto.getCategoriaId());
         dto.setCategoria(categoriaDTO);
 
@@ -50,9 +52,10 @@ public class ProductService {
 
         Product nuevo = new Product();
         nuevo.setNombre(request.getNombre());
+        nuevo.setMarca(request.getMarca());
+        nuevo.setModelo(request.getModelo());
         nuevo.setDescripcion(request.getDescripcion());
         nuevo.setPrecio(request.getPrecio());
-        nuevo.setStock(request.getStock());
         nuevo.setCategoriaId(request.getCategoriaId());
         // estado = true viene por defecto
 
@@ -65,5 +68,11 @@ public class ProductService {
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public ProductoResponseDTO obtenerPorId(Long id) {
+        Product producto = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
+        return mapToDTO(producto);
     }
 }
