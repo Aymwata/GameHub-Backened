@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-
-
-
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -21,14 +18,17 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    // 1. Crear usuario
+    // CREACIÓN DE USUARIO
+
     @PostMapping
     public ResponseEntity<Usuario> crearUsuario(@Valid @RequestBody UsuarioRequestDTO dto) {
         Usuario nuevoUsuario = usuarioService.crearUsuario(dto);
         return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
     }
 
-    // 2. Listar usuarios (por rol o estado)
+
+    // LISTADO DE USUARIOS
+
     @GetMapping
     public ResponseEntity<List<Usuario>> listarUsuarios(
             @RequestParam(required = false) String rol,
@@ -36,13 +36,17 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarPorRolOEstado(rol, estado));
     }
 
-    // 3. Buscar usuario por ID
+
+    // BÚSQUEDA DE USUARIO POR ID (GET)
+
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
-    // 4. Actualizar datos de contacto
+
+    // ACTUALIZACIÓN DE DATOS
+
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(
             @PathVariable Long id,
@@ -50,15 +54,19 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.actualizarDatos(id, dto));
     }
 
-    // 5. Desactivar usuario
+
+    // DESACTIVACIÓN DE USUARIO
+
     @PatchMapping("/{id}/desactivar")
     public ResponseEntity<Usuario> desactivarUsuario(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.desactivarUsuario(id));
     }
 
+
+    // BÚSQUEDA DE USUARIO POR EMAIL (GET)
+
     @GetMapping("/buscar")
     public ResponseEntity<Usuario> buscarPorEmail(@RequestParam String email) {
-        // Usamos el método que ya existe en el service
         return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
     }
 }
