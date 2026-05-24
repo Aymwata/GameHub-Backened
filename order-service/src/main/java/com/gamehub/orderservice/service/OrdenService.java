@@ -28,6 +28,7 @@ public class OrdenService {
     private final InventarioClient inventarioClient;
     private final PromocionClient promocionClient;
 
+    // FLUJO CENTRAL DE LA COMPRA
     @Transactional
     public Orden crearOrden(OrdenRequestDTO request) {
         log.info("Iniciando creación de orden para el usuario: {}", request.getUsuarioId());
@@ -42,8 +43,9 @@ public class OrdenService {
 
         double subtotal = 0.0;
 
-        // 2. Procesar Detalles, Validar Productos y Stock
+        // 2. Procesar detalles, valdar Productos y su stock
         for (DetalleOrdenRequestDTO detalleReq : request.getDetalles()) {
+
             // Validar existencia y estado del producto
             ProductoClientDTO producto = validarProducto(detalleReq.getProductoId());
 
@@ -53,7 +55,7 @@ public class OrdenService {
             DetalleOrden detalle = new DetalleOrden();
             detalle.setProductoId(producto.getId());
             detalle.setCantidad(detalleReq.getCantidad());
-            detalle.setPrecioUnitario(producto.getPrecio()); // Aseguramos el precio histórico
+            detalle.setPrecioUnitario(producto.getPrecio());
             detalle.setOrden(nuevaOrden);
 
             nuevaOrden.getDetalles().add(detalle);
@@ -62,7 +64,7 @@ public class OrdenService {
 
         nuevaOrden.setSubtotal(subtotal);
 
-        // 3. Aplicar Promoción (Si existe)
+        // 3. Aplicar Promoción (suponiendo que exista una)
         if (request.getCodigoPromocion() != null && !request.getCodigoPromocion().isBlank()) {
             double descuento = calcularDescuento(request.getCodigoPromocion(), subtotal);
             nuevaOrden.setDescuento(descuento);
@@ -80,17 +82,20 @@ public class OrdenService {
         return ordenGuardada;
     }
 
+    // LISTADO Y FILTRADO MULTIPLE
     public List<Orden> listarOrdenes(Long usuarioId, String estado) {
         if (usuarioId != null) return ordenRepository.findByUsuarioId(usuarioId);
         if (estado != null) return ordenRepository.findByEstado(estado.toUpperCase());
         return ordenRepository.findAll();
     }
 
+    // BUSQUEDA DIRECTA POR ID
     public Orden buscarPorId(Long id) {
         return ordenRepository.findById(id)
                 .orElseThrow(() -> new OrdenException("La orden no existe"));
     }
 
+    // TRANSICION DE ESTADOS DE LA ORDEN
     public Orden actualizarEstado(Long id, String nuevoEstado) {
         Orden orden = buscarPorId(id);
 
@@ -102,6 +107,7 @@ public class OrdenService {
         return ordenRepository.save(orden);
     }
 
+    // CANCELACION Y ABORTO DE TRANSACCION
     @Transactional
     public Orden cancelarOrden(Long id) {
         Orden orden = buscarPorId(id);
@@ -112,15 +118,14 @@ public class OrdenService {
 
         orden.setEstado("CANCELADA");
 
-        // Aquí deberías crear una llamada al inventory-service para LIBERAR el stock reservado.
-        // Queda como mejora para implementar con un endpoint de @PatchMapping("/release") en tu inventario.
 
         log.info("Orden {} cancelada. (Se requiere liberar stock)", id);
         return ordenRepository.save(orden);
     }
 
-    // --- Métodos Privados de Validación ---
 
+
+    // CONSULTA FEIGN DE ESTADO DE USUARIO
     private UsuarioClientDTO validarUsuario(Long id) {
         try {
             UsuarioClientDTO usuario = usuarioClient.obtenerUsuario(id);
@@ -133,6 +138,7 @@ public class OrdenService {
         }
     }
 
+    // CONSULTA FEIGN DE VIGENCIA DE PRODUCTO
     private ProductoClientDTO validarProducto(Long id) {
         try {
             ProductoClientDTO producto = productoClient.obtenerProducto(id);
@@ -141,14 +147,14 @@ public class OrdenService {
             }
             return producto;
         } catch (OrdenException oe) {
-            throw oe; // Relanzamos nuestro mensaje de "inactivo"
+            throw oe;
         } catch (Exception e) {
-            // Esto imprimirá en rojo en tu consola el error REAL (ej: 404, Connection Refused, etc.)
             log.error("Fallo la comunicación con product-service para el ID {}: {}", id, e.getMessage());
             throw new OrdenException("Error al validar el producto ID " + id);
         }
     }
 
+    // CONSULTA FEIGN DE INVENTARIO DISPONIBLE
     private void validarStock(Long productoId, Integer cantidadRequerida) {
         try {
             InventarioClientDTO inventario = inventarioClient.consultarStock(productoId);
@@ -156,12 +162,13 @@ public class OrdenService {
                 throw new OrdenException("Stock insuficiente para el producto ID " + productoId);
             }
         } catch (OrdenException oe) {
-            throw oe; // Relanzar nuestra excepción
+            throw oe;
         } catch (Exception e) {
             throw new OrdenException("Error al consultar el stock del producto ID " + productoId);
         }
     }
 
+    // CONSULTA FEIGN Y MATEMATICA DE LOSDESCUENTOS
     private double calcularDescuento(String codigo, double subtotal) {
         try {
             PromocionClientDTO promo = promocionClient.obtenerPorCodigo(codigo);
@@ -181,7 +188,7 @@ public class OrdenService {
                 descuentoCalculado = promo.getValor();
             }
 
-            // El descuento no puede ser mayor al subtotal
+
             return Math.min(descuentoCalculado, subtotal);
 
         } catch (OrdenException oe) {
@@ -191,6 +198,7 @@ public class OrdenService {
         }
     }
 
+    // CONGELAMIENTO DE UNIDADES VIA FEIGN (producto reservado)
     private void reservarStockEnInventario(List<DetalleOrden> detalles) {
         for (DetalleOrden detalle : detalles) {
             try {

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "shippings")
 @Data
-@EqualsAndHashCode(callSuper = true) // Muy importante cuando Lombok hereda de otra clase
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Shipping extends Audit {

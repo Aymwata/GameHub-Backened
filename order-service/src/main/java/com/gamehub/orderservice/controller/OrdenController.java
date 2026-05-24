@@ -18,14 +18,16 @@ public class OrdenController {
 
     private final OrdenService ordenService;
 
-    // 1. Crear orden
+
+    // CREACION DE ORDEN DE COMPRA
     @PostMapping
     public ResponseEntity<Orden> crearOrden(@Valid @RequestBody OrdenRequestDTO request) {
         Orden nuevaOrden = ordenService.crearOrden(request);
         return new ResponseEntity<>(nuevaOrden, HttpStatus.CREATED);
     }
 
-    // 2. Listar órdenes por cliente o estado
+    // LISTADO Y FILTRADO
+    // Permite obtener el historial o filtrar por ID de usuario y estado actual
     @GetMapping
     public ResponseEntity<List<Orden>> listarOrdenes(
             @RequestParam(required = false) Long usuarioId,
@@ -33,14 +35,13 @@ public class OrdenController {
         return ResponseEntity.ok(ordenService.listarOrdenes(usuarioId, estado));
     }
 
-    // 3. Buscar orden por ID
+    // BUSQUEDA POR ID
     @GetMapping("/{id}")
     public ResponseEntity<Orden> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ordenService.buscarPorId(id));
     }
 
-    // 4. Actualizar estado
-// 4. Actualizar estado (Versión Blindada)
+    // ACTUALIZACION DE ESTADO
     @PutMapping("/{id}/status")
     public ResponseEntity<Orden> actualizarEstado(
             @PathVariable("id") Long id,
@@ -48,7 +49,7 @@ public class OrdenController {
         return ResponseEntity.ok(ordenService.actualizarEstado(id, estado));
     }
 
-    // 5. Cancelar orden
+    // CANCELACION DE ORDEN
     @PutMapping("/{id}/cancel")
     public ResponseEntity<Orden> cancelarOrden(@PathVariable Long id) {
         return ResponseEntity.ok(ordenService.cancelarOrden(id));

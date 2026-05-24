@@ -10,5 +10,5 @@ public class AddressClientDTO {
     private String numero;
     private String comuna;
     private String ciudad;
-    // Basado estrictamente en el modelo de Direccion sugerido [cite: 99]
+
 }
