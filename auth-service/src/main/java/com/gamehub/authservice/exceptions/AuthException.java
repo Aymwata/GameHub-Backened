@@ -13,7 +13,8 @@ import java.util.Map;
 @ControllerAdvice
 public class AuthException {
 
-    // Manejo de errores de validación (Bean Validation)
+    // MANEJO DE ERRORES DE VALIDACION (las anotaciones en el model)
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -24,7 +25,8 @@ public class AuthException {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    // Manejo de excepciones personalizadas de negocio
+    // MANEJO DE EXCEPCIONES
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleBusinessException(IllegalArgumentException ex) {
         log.error("Excepción de negocio: {}", ex.getMessage());
