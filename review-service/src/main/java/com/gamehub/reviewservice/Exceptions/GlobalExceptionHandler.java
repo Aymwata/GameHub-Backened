@@ -24,6 +24,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+
+    // MANEJO DE CONFLICTOS DE NEGOCIO
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<Map<String, String>> handleBusinessException(BusinessRuleException ex) {
         Map<String, String> error = new HashMap<>();
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    // MANEJO DE DATOS INEXISTENTES
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFoundException(ResourceNotFoundException ex) {
         Map<String, String> error = new HashMap<>();
