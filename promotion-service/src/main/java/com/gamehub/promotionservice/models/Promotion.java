@@ -3,6 +3,7 @@ package com.gamehub.promotionservice.models;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Promotion {
+@EqualsAndHashCode(callSuper = true)
+public class Promotion extends Audit{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
