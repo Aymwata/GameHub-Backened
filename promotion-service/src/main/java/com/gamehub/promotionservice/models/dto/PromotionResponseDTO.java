@@ -15,12 +15,12 @@ public class PromotionResponseDTO {
     private Double montoMinimo;
     private Integer usosMaximos;
 
-    // ¡Aquí está el nuevo campo para que el frontend sepa cuántos usos lleva!
+
     private Integer usosActuales;
 
     private Boolean estado;
 
-    // Los "espejos" con la información traída por Feign
+
     private ProductoClientDTO producto;
     private CategoriaClientDTO categoria;
 }

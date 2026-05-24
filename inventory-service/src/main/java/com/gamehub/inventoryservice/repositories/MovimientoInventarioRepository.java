@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface MovimientoInventarioRepository extends JpaRepository<MovimientoInventario, Long> {
-    // Permite buscar todo el historial de movimientos de un producto específico
+
     List<MovimientoInventario> findByProductId(Long productId);
 }

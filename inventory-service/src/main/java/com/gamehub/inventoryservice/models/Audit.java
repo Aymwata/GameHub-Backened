@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@MappedSuperclass // Permite que otras entidades hereden estas columnas
+@MappedSuperclass
 public class Audit {
 
     @Column(name = "created_at", updatable = false)

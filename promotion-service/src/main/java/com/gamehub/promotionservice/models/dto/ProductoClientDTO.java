@@ -6,5 +6,5 @@ import lombok.Data;
 public class ProductoClientDTO {
     private Long id;
     private String nombre;
-    private Double precio; // Útil por si la promoción necesita validar el precio base
+    private Double precio;
 }

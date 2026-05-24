@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 
-    // Busca un cupón por su código (Ej. "GAMER2026")
+
     Optional<Promotion> findByCodigo(String codigo);
 
 }

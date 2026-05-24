@@ -21,12 +21,12 @@ public class MovimientoInventario extends Audit {
     @Column(nullable = false)
     private Long productId;
 
-    // Tipos de movimiento: "INGRESO", "RESERVA", "LIBERACION", "VENTA_CONFIRMADA"
+
     @Column(nullable = false)
     private String tipo;
 
     @Column(nullable = false)
     private Integer cantidad;
 
-    // La fecha ya está cubierta por tu clase Audit (createdAt)
+
 }

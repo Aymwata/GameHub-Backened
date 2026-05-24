@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/inventory")
-@RequiredArgsConstructor // Sustituye @Autowired por inyección por constructor
+@RequiredArgsConstructor
 public class InventoryController {
 
     private final InventoryService inventoryService;
@@ -37,7 +37,7 @@ public class InventoryController {
 
         inventoryService.reserveStock(productId, quantity);
 
-        // Devolvemos un JSON en lugar de un String plano (Mejor práctica)
+
         return ResponseEntity.ok(Map.of(
                 "message", "Stock reservado correctamente",
                 "productId", productId.toString(),

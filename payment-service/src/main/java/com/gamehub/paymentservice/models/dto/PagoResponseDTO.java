@@ -12,5 +12,5 @@ public class PagoResponseDTO {
     private String estado;
     private String codigoTransaccion;
     private Long usuarioId;
-    private LocalDateTime createdAt; // Fecha de transacción heredada
+    private LocalDateTime createdAt;
 }

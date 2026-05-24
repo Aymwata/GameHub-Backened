@@ -110,7 +110,7 @@ public class PagoService {
         response.setEstado(pago.getEstado());
         response.setCodigoTransaccion(pago.getCodigoTransaccion());
         response.setUsuarioId(pago.getUsuarioId());
-        response.setCreatedAt(pago.getCreatedAt()); // Extraído del MappedSuperclass Audit
+        response.setCreatedAt(pago.getCreatedAt());
         return response;
     }
 }

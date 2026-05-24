@@ -30,7 +30,7 @@ public class PromotionRequestDTO {
     @Min(value = 1, message = "Debe tener al menos 1 uso")
     private Integer usosMaximos;
 
-    // Estos campos son opcionales (si son nulos, el descuento aplica a toda la tienda)
+
     private Long productoId;
     private Long categoriaId;
 }

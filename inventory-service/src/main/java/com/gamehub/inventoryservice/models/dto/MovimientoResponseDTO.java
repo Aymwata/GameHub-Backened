@@ -9,5 +9,5 @@ public class MovimientoResponseDTO {
     private Long productId;
     private String tipo;
     private Integer cantidad;
-    private LocalDateTime fechaMovimiento; // Aquí mapearemos el createdAt de la clase Audit
+    private LocalDateTime fechaMovimiento;
 }

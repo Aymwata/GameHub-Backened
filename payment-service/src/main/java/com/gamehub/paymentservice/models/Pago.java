@@ -6,7 +6,7 @@ import lombok.*;
 @Entity
 @Table(name = "pagos")
 @Data
-@EqualsAndHashCode(callSuper = true) // Incluye los campos de Audit en el equals/hashCode
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

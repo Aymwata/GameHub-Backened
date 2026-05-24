@@ -22,29 +22,28 @@ public class Promotion {
     private String codigo; // Ej: "GAMER2026"
 
     @Column(nullable = false)
-    private String tipo; // Ej: "PORCENTAJE", "MONTO_FIJO"
+    private String tipo;
 
     @Column(nullable = false)
-    private Double valor; // Ej: 15.0 o 5000.0
+    private Double valor;
+    @Column(nullable = false)
+    private LocalDateTime fechaInicio;
 
     @Column(nullable = false)
-    private LocalDateTime fechaInicio; // Cambiado a LocalDateTime para coincidir con los DTOs
+    private LocalDateTime fechaFin;
+
+    private Double montoMinimo;
 
     @Column(nullable = false)
-    private LocalDateTime fechaFin; // Cambiado a LocalDateTime para coincidir con los DTOs
-
-    private Double montoMinimo; // Monto mínimo de compra requerido
+    private Integer usosMaximos;
 
     @Column(nullable = false)
-    private Integer usosMaximos; // Límite total de canjes permitidos
+    private Integer usosActuales = 0;
 
-    @Column(nullable = false)
-    private Integer usosActuales = 0; // Inicializado en 0 por defecto para que funcione tu @Query
 
-    // ¡AQUÍ ESTÁ LA SOLUCIÓN! Las llaves foráneas lógicas para conectar con los otros microservicios
     private Long productoId;
     private Long categoriaId;
 
     @Column(nullable = false)
-    private Boolean estado = true; // Vigente por defecto al crearse
+    private Boolean estado = true;
 }

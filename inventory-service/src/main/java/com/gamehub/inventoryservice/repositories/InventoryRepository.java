@@ -1,4 +1,4 @@
-package com.gamehub.inventoryservice.repositories; // Repositories con R mayúscula
+package com.gamehub.inventoryservice.repositories;
 
 import com.gamehub.inventoryservice.models.Inventory; // Import con M mayúscula
 import org.springframework.data.jpa.repository.JpaRepository;

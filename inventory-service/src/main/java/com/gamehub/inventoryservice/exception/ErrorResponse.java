@@ -12,5 +12,5 @@ public class ErrorResponse {
     private int status;
     private String message;
     private LocalDateTime timestamp;
-    private Map<String, String> errors; // Para validaciones de campos
+    private Map<String, String> errors;
 }
