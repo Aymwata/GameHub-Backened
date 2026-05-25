@@ -30,15 +30,14 @@ public class Shipping extends Audit {
     private String address;
 
     @Column(nullable = false)
-    private String carrier; // Ej: Chilexpress, Starken
+    private String carrier;
 
     @Column(unique = true)
     private String trackingNumber;
 
     @Column(nullable = false)
-    private String status; // Ej: "PREPARANDO", "EN_TRANSITO", "ENTREGADO", "CANCELADO"
+    private String status;
 
-    // Fechas propias del negocio logístico (Independientes de la auditoría)
     private LocalDateTime shippingDate;
     private LocalDateTime deliveryDate;
 }

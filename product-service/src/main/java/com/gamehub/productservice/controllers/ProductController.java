@@ -20,7 +20,6 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductoResponseDTO> crearProducto(@Valid @RequestBody ProductoRequestDTO request) {
-        // Al llamar al service aquí, internamente Feign consultará al category-service
         return ResponseEntity.status(HttpStatus.CREATED).body(service.crearProducto(request));
     }
 

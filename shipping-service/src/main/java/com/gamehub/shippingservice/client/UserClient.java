@@ -10,7 +10,6 @@ import java.util.List;
 @FeignClient(name = "user-service", url = "http://localhost:8080")
 public interface UserClient {
 
-    // Llama al microservicio de usuarios para rescatar la dirección física del cliente
     @GetMapping("/api/directions/usuario/{userId}")
     List<AddressClientDTO> obtenerDireccionDelUsuario(@PathVariable("userId") Long userId);
 }

@@ -22,10 +22,10 @@ public class Product extends Audit{
     private String nombre;
 
     @Column(nullable = false)
-    private String marca; // Añadido por rúbrica
+    private String marca;
 
     @Column(nullable = false)
-    private String modelo; // Añadido por rúbrica
+    private String modelo;
 
     private String descripcion;
 

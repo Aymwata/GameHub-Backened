@@ -1,4 +1,4 @@
-package com.gamehub.category_service.controllers; // <-- Cambiado a minúscula para evitar bloqueos de compilación
+package com.gamehub.category_service.controllers;
 
 import com.gamehub.category_service.models.dto.CategoriaRequestDTO;
 import com.gamehub.category_service.models.dto.CategoriaResponseDTO;

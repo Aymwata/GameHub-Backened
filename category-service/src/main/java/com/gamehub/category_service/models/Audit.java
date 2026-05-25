@@ -1,4 +1,4 @@
-package com.gamehub.authservice.models;
+package com.gamehub.category_service.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@MappedSuperclass // Permite que otras entidades hereden estas columnas
+@MappedSuperclass
 public class Audit {
 
     @Column(name = "created_at", updatable = false)

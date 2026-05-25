@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor // Lombok inyecta el repositorio automáticamente
+@RequiredArgsConstructor
 public class CategoriaService {
 
     private final CategoriaRepository repository;
 
-    // --- MÉTODOS PRIVADOS DE TRADUCCIÓN (MAPEO) ---
-    // En la defensa técnica, di: "Usamos métodos manuales de mapeo para desacoplar la entidad del controlador"
+    // Mapeo para no usar los modelos reales
     private CategoriaResponseDTO mapToDTO(Categoria categoria) {
         return new CategoriaResponseDTO(
                 categoria.getId(),
@@ -27,12 +26,10 @@ public class CategoriaService {
         );
     }
 
-    // --- LÓGICA DE NEGOCIO ---
-
     public List<CategoriaResponseDTO> obtenerTodas() {
         return repository.findAll()
                 .stream()
-                .map(this::mapToDTO) // Convierte cada Entidad en un DTO
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +43,6 @@ public class CategoriaService {
         Categoria nueva = new Categoria();
         nueva.setNombre(request.getNombre());
         nueva.setDescripcion(request.getDescripcion());
-        // El estado = true ya viene por defecto en la Entidad
 
         Categoria guardada = repository.save(nueva);
         return mapToDTO(guardada);
@@ -70,7 +66,7 @@ public class CategoriaService {
         repository.save(existente);
     }
 
-    // El endpoint interno para que OpenFeign valide rápido
+
     public boolean existeCategoria(Long id) {
         return repository.existsById(id);
     }

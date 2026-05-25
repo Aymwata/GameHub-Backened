@@ -17,9 +17,8 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository repository;
-    private final CategoryClient categoryClient; // Inyectamos nuestro "teléfono" Feign
+    private final CategoryClient categoryClient;
 
-    // --- MÉTODOS PRIVADOS DE TRADUCCIÓN ---
 
     private ProductoResponseDTO mapToDTO(Product producto) {
         ProductoResponseDTO dto = new ProductoResponseDTO();
@@ -30,20 +29,18 @@ public class ProductService {
         dto.setDescripcion(producto.getDescripcion());
         dto.setPrecio(producto.getPrecio());
 
-        // ¡AQUÍ ESTÁ LA LÍNEA MÁGICA QUE FALTABA!
         dto.setEstado(producto.getEstado());
 
-        // Llamamos al category-service para obtener los datos reales de la categoría
         CategoriaClientDTO categoriaDTO = categoryClient.obtenerCategoriaPorId(producto.getCategoriaId());
         dto.setCategoria(categoriaDTO);
 
         return dto;
     }
 
-    // --- LÓGICA DE NEGOCIO ---
+
 
     public ProductoResponseDTO crearProducto(ProductoRequestDTO request) {
-        // REGLA DE NEGOCIO CLAVE: Validar que la categoría exista en el OTRO microservicio
+
         boolean categoriaExiste = categoryClient.verificarExistencia(request.getCategoriaId());
 
         if (!categoriaExiste) {
@@ -57,7 +54,7 @@ public class ProductService {
         nuevo.setDescripcion(request.getDescripcion());
         nuevo.setPrecio(request.getPrecio());
         nuevo.setCategoriaId(request.getCategoriaId());
-        // estado = true viene por defecto
+
 
         Product guardado = repository.save(nuevo);
         return mapToDTO(guardado);

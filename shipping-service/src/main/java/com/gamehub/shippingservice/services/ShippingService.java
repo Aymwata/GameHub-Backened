@@ -25,33 +25,28 @@ public class ShippingService {
     private final OrderClient orderClient;
     private final UserClient userClient;
 
-    // --- 1. CREAR DESPACHO ---
+
     public ShippingResponseDTO crearDespacho(ShippingRequestDTO request) {
         log.info("Iniciando creación de despacho para la orden: {}", request.getOrderId());
 
-        // Regla A: Solo despachar órdenes pagadas
         OrderClientDTO orden = orderClient.obtenerOrdenPorId(request.getOrderId());
-// La nueva versión tolerante:
+
         if (!"PAID".equalsIgnoreCase(orden.getEstado()) && !"PAGADA".equalsIgnoreCase(orden.getEstado())) {
-            throw new RuntimeException("Error: No se puede despachar una orden que no esté PAGADA o PAID.");
+            throw new RuntimeException("Error: No se puede despachar una orden que no esté PAGADA.");
         }
 
-        // Regla B: Validar que el cliente tenga dirección válida
-// Regla B: Validar que el cliente tenga dirección válida (Ahora recibiendo una lista)
         List<AddressClientDTO> direcciones = userClient.obtenerDireccionDelUsuario(request.getUserId());
 
         if (direcciones == null || direcciones.isEmpty()) {
             throw new RuntimeException("Error: El cliente no tiene ninguna dirección válida registrada.");
         }
 
-        // Tomamos la primera dirección de la lista por defecto
         AddressClientDTO direccion = direcciones.get(0);
 
         if (direccion.getCalle() == null || direccion.getCalle().isBlank()) {
             throw new RuntimeException("Error: La dirección principal del cliente está incompleta.");
         }
 
-        // Formatear la dirección recibida por Feign
         String direccionCompleta = direccion.getCalle() + " " + direccion.getNumero() + ", " +
                 direccion.getComuna() + ", " + direccion.getCiudad();
         
@@ -62,18 +57,16 @@ public class ShippingService {
         envio.setCarrier(request.getCarrier());
         envio.setAddress(direccionCompleta);
         envio.setStatus("PREPARANDO");
-        envio.setShippingDate(LocalDateTime.now()); // Registramos cuándo entró al sistema de logística
+        envio.setShippingDate(LocalDateTime.now());
 
         Shipping guardado = repository.save(envio);
         return mapToDTO(guardado);
     }
 
-    // --- 2. ACTUALIZAR ESTADO Y TRACKING ---
     public ShippingResponseDTO actualizarDespacho(Long id, String nuevoEstado, String trackingNumber) {
         Shipping envio = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Despacho no encontrado con ID: " + id));
 
-        // Regla C: Tracking único cuando exista
         if (trackingNumber != null && !trackingNumber.isBlank() && !trackingNumber.equals(envio.getTrackingNumber())) {
             repository.findByTrackingNumber(trackingNumber).ifPresent(s -> {
                 throw new RuntimeException("Error: El número de seguimiento ya existe en otro despacho.");
@@ -81,9 +74,8 @@ public class ShippingService {
             envio.setTrackingNumber(trackingNumber);
         }
 
-        // Regla D: No cambiar a entregado sin fecha de entrega [cite: 215]
         if ("ENTREGADO".equalsIgnoreCase(nuevoEstado)) {
-            envio.setDeliveryDate(LocalDateTime.now()); // Aseguramos que tenga fecha de entrega al cambiar a este estado
+            envio.setDeliveryDate(LocalDateTime.now());
         }
 
         envio.setStatus(nuevoEstado.toUpperCase());
@@ -91,17 +83,17 @@ public class ShippingService {
         return mapToDTO(actualizado);
     }
 
-    // --- 3. CANCELAR DESPACHO ---
+
     public void cancelarDespacho(Long id) {
         Shipping envio = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Despacho no encontrado."));
 
-        // Regla E: Cancelar despacho si la orden fue anulada [cite: 207]
+
         envio.setStatus("CANCELADO");
         repository.save(envio);
     }
 
-    // --- 4. CONSULTAS (GET) ---
+
     public ShippingResponseDTO obtenerPorId(Long id) {
         return mapToDTO(repository.findById(id).orElseThrow(() -> new RuntimeException("Despacho no encontrado.")));
     }
@@ -114,7 +106,7 @@ public class ShippingService {
         return repository.findByStatus(status.toUpperCase()).stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
-    // --- MAPEO INTERNO ---
+
     private ShippingResponseDTO mapToDTO(Shipping entity) {
         ShippingResponseDTO dto = new ShippingResponseDTO();
         dto.setId(entity.getId());
