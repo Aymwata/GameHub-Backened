@@ -1,3 +1,4 @@
+// Interfaz de Spring Data JPA para guardar registros en la tabla de historial de movimientos.
 package com.gamehub.inventoryservice.repositories;
 
 import com.gamehub.inventoryservice.models.MovimientoInventario;

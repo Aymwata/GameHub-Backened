@@ -1,3 +1,4 @@
+// Recibe de forma segura los datos del pago (ordenId, monto, método) enviados en el JSON.
 package com.gamehub.paymentservice.models.dto;
 
 import jakarta.validation.constraints.*;

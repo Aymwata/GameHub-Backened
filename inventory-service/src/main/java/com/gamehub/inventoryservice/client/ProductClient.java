@@ -1,3 +1,4 @@
+// Conexión por Feign para consultar si un producto existe en el microservicio de productos.
 package com.gamehub.inventoryservice.client;
 
 import com.gamehub.inventoryservice.models.dto.ProductClientDTO;

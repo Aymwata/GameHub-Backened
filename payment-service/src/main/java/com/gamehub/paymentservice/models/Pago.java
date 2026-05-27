@@ -1,3 +1,4 @@
+// Entidad JPA que crea y gestiona la tabla de pagos en tu base de datos local.
 package com.gamehub.paymentservice.models;
 
 import jakarta.persistence.*;

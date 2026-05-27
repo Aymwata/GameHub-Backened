@@ -1,3 +1,4 @@
+// Ejecuta la lógica: Verifica si el cupón expiró, si ya se usó y calcula la rebaja de precio.
 package com.gamehub.promotionservice.services;
 
 import com.gamehub.promotionservice.client.CategoryClient;

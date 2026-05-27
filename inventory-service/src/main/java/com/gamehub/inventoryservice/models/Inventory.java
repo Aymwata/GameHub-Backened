@@ -1,4 +1,5 @@
-package com.gamehub.inventoryservice.models; // Models con M mayúscula
+// Entidad JPA mapeada directo a la tabla de la Base de Datos que guarda el stock actual.
+package com.gamehub.inventoryservice.models;
 
 import jakarta.persistence.*;
 import lombok.Data;

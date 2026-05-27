@@ -1,3 +1,4 @@
+// Molde de datos limpio que se le devuelve al cliente tras consultar el stock de un producto.
 package com.gamehub.inventoryservice.models.dto;
 
 import lombok.Data;

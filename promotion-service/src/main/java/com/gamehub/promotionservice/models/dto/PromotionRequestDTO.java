@@ -1,3 +1,4 @@
+// Valida los datos de entrada cuando un cliente digita un código de descuento en la tienda.
 package com.gamehub.promotionservice.models.dto;
 
 import jakarta.validation.constraints.*;

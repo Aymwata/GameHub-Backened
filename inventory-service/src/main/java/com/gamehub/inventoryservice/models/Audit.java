@@ -1,3 +1,4 @@
+// Superclase que hereda automáticamente las fechas de creación y actualización a la base de datos.
 package com.gamehub.inventoryservice.models;
 
 import jakarta.persistence.Column;

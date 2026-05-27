@@ -1,3 +1,4 @@
+// Conexión por Feign para traer los datos y totales del microservicio de órdenes.
 package com.gamehub.paymentservice.client;
 
 import com.gamehub.paymentservice.models.dto.OrdenClientDTO;

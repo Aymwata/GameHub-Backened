@@ -1,3 +1,4 @@
+// Lógica de negocio: Verifica que la orden exista, compara montos y aprueba el cobro.
 package com.gamehub.paymentservice.services;
 
 import com.gamehub.paymentservice.client.OrderClient;

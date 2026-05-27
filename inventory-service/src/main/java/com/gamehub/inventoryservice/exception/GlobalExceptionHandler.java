@@ -1,3 +1,4 @@
+// Interceptor del sistema que atrapa los errores y evita que la aplicación se caiga.
 package com.gamehub.inventoryservice.exception;
 
 import lombok.extern.slf4j.Slf4j;

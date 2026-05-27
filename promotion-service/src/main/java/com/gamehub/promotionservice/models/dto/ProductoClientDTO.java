@@ -1,3 +1,4 @@
+// Estructura para recibir los datos de un producto desde product-service y verificar si tiene una rebaja activa.
 package com.gamehub.promotionservice.models.dto;
 
 import lombok.Data;

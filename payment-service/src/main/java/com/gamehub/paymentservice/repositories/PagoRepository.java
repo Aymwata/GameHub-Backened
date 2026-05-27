@@ -1,3 +1,4 @@
+// Conector JPA para guardar los pagos aprobados y validar duplicados usando "existsBy".
 package com.gamehub.paymentservice.repositories;
 
 import com.gamehub.paymentservice.models.Pago;

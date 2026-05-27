@@ -1,3 +1,4 @@
+// Tabla de la base de datos que guarda los cupones, porcentajes de descuento y fechas límite.
 package com.gamehub.promotionservice.models;
 
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ public class Promotion {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String codigo; // Ej: "GAMER2026"
+    private String codigo;
 
     @Column(nullable = false)
     private String tipo;

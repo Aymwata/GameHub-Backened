@@ -1,3 +1,4 @@
+// Estructura de salida que muestra el pago con su estado APPROVED y código de transacción único.
 package com.gamehub.paymentservice.models.dto;
 
 import lombok.Data;

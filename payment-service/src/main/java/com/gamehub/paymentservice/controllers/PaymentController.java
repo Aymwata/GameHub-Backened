@@ -1,3 +1,4 @@
+// Recibe la petición HTTP de Postman en la ruta "/api/payments" para procesar transacciones.
 package com.gamehub.paymentservice.controllers;
 
 import com.gamehub.paymentservice.models.dto.*;

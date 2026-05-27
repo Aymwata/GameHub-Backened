@@ -1,3 +1,4 @@
+// Entidad JPA que representa la tabla de historial (ingresos/egresos) en la base de datos.
 package com.gamehub.inventoryservice.models;
 
 import jakarta.persistence.*;

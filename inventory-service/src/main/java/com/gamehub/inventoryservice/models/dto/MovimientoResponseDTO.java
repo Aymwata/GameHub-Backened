@@ -1,3 +1,4 @@
+// Molde de salida para mostrar el historial de ingresos o egresos de mercadería.
 package com.gamehub.inventoryservice.models.dto;
 
 import lombok.Data;

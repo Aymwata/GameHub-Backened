@@ -1,3 +1,4 @@
+// Molde de datos seguro que se recibe desde Postman al intentar modificar un stock.
 package com.gamehub.inventoryservice.models.dto;
 
 

@@ -1,3 +1,4 @@
+// JSON limpio que se le devuelve al cliente mostrando el descuento ya aplicado y el nuevo total.
 package com.gamehub.promotionservice.models.dto;
 
 import lombok.Data;

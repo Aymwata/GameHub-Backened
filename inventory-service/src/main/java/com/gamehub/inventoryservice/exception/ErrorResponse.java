@@ -1,3 +1,4 @@
+// Estructura limpia en JSON (molde) que se envía al cliente cuando ocurre un error.
 package com.gamehub.inventoryservice.exception;
 
 import lombok.Builder;

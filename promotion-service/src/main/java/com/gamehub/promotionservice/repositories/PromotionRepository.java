@@ -1,3 +1,4 @@
+// Ejecuta consultas en la base de datos para buscar cupones activos por su código de texto.
 package com.gamehub.promotionservice.repositories;
 
 import com.gamehub.promotionservice.models.Promotion; // Asegúrate de que el nombre coincida con tu clase

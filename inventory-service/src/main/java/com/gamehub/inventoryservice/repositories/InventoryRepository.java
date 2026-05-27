@@ -1,3 +1,4 @@
+// Interfaz de Spring Data JPA para hacer el CRUD (guardar, buscar, borrar) del stock en BD.
 package com.gamehub.inventoryservice.repositories;
 
 import com.gamehub.inventoryservice.models.Inventory; // Import con M mayúscula

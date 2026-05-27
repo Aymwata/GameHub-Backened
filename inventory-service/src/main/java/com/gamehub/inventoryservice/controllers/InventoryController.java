@@ -1,3 +1,4 @@
+// Expone los endpoints REST (URLs) para que Postman o el Frontend consulten el stock.
 package com.gamehub.inventoryservice.controllers;
 
 import com.gamehub.inventoryservice.models.Inventory;

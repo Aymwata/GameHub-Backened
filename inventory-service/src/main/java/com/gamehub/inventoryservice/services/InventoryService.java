@@ -1,3 +1,4 @@
+// Clase principal donde se programa toda la lógica del negocio y las reglas del inventario.
 package com.gamehub.inventoryservice.services;
 
 import com.gamehub.inventoryservice.client.ProductClient;
@@ -143,7 +144,7 @@ public class InventoryService {
                     dto.setProductId(mov.getProductId());
                     dto.setTipo(mov.getTipo());
                     dto.setCantidad(mov.getCantidad());
-                    dto.setFechaMovimiento(mov.getCreatedAt()); // Extraemos la fecha automática de la clase Audit
+                    dto.setFechaMovimiento(mov.getCreatedAt());
                     return dto;
                 })
                 .collect(Collectors.toList());

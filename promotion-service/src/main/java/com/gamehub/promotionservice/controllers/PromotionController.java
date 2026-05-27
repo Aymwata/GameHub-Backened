@@ -1,3 +1,4 @@
+// Expone las rutas para que los clientes apliquen cupones de descuento en sus compras.
 package com.gamehub.promotionservice.controllers;
 
 import com.gamehub.promotionservice.models.dto.PromotionRequestDTO;
