@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO para enviar datos hacia el exterior (GET o respuestas de POST/PUT).
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

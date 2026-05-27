@@ -12,7 +12,5 @@ public class ProductoResponseDTO {
     private Double precio;
     private Boolean estado;
 
-    // En lugar de devolver solo un número (categoriaId),
-    // devolvemos el objeto espejo con los datos reales de la categoría.
     private CategoriaClientDTO categoria;
 }

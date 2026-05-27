@@ -4,10 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-/**
- * DTO para recibir datos desde el exterior (POST/PUT).
- * No incluye el ID ni el estado, porque esos los controla el sistema.
- */
+
 @Data
 public class CategoriaRequestDTO {
 

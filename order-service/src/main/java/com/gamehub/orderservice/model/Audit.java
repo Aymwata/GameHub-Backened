@@ -1,14 +1,15 @@
-package com.gamehub.shippingservice.models;
+package com.gamehub.orderservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
-@MappedSuperclass
+@MappedSuperclass // Permite que otras entidades hereden estas columnas
 public class Audit {
 
     @Column(name = "created_at", updatable = false)

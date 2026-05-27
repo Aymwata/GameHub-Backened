@@ -1,5 +1,6 @@
 package com.gamehub.orderservice.model.DTOs;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -14,5 +15,6 @@ public class OrdenRequestDTO {
     private String codigoPromocion; // Opcional
 
     @NotEmpty(message = "La orden debe tener al menos un detalle")
+    @Valid
     private List<DetalleOrdenRequestDTO> detalles;
 }

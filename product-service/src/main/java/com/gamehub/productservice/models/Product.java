@@ -3,6 +3,7 @@ package com.gamehub.productservice.models;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -10,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+@EqualsAndHashCode(callSuper = true)
+public class Product extends Audit{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +22,10 @@ public class Product {
     private String nombre;
 
     @Column(nullable = false)
-    private String marca; // Añadido por rúbrica
+    private String marca;
 
     @Column(nullable = false)
-    private String modelo; // Añadido por rúbrica
+    private String modelo;
 
     private String descripcion;
 

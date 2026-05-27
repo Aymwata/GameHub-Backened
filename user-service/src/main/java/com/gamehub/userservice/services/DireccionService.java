@@ -19,6 +19,10 @@ public class DireccionService {
     private final DireccionRepository direccionRepository;
     private final UsuarioRepository usuarioRepository;
 
+
+
+    // CREACIÓN DE DIRECCIÓN DE DESPACHO
+    // Valida que el usuario dueño, mapea los datos de entrada y asocia la nueva dirección al perfil del cliente.
     public Direccion crearDireccion(DireccionRequestDTO dto) {
         log.info("Agregando dirección para el usuario ID: {}", dto.getUsuarioId());
 
@@ -35,10 +39,16 @@ public class DireccionService {
         return direccionRepository.save(direccion);
     }
 
+
+    // LISTADO DE DIRECCIONES POR USUARIO
+    // Retorna todas las direcciones asociadas a un cliente.
     public List<Direccion> listarPorUsuario(Long usuarioId) {
         return direccionRepository.findByUsuarioId(usuarioId);
     }
 
+
+    // ACTUALIZACIÓN DE DIRECCIÓN
+    // Busca una dirección específica por su ID y actualiza sus campos de direccion
     public Direccion actualizarDireccion(Long id, DireccionRequestDTO dto) {
         log.info("Actualizando dirección ID: {}", id);
         Direccion direccion = direccionRepository.findById(id)
@@ -52,6 +62,8 @@ public class DireccionService {
         return direccionRepository.save(direccion);
     }
 
+    // ELIMINACIÓN DE DIRECCIÓN
+    // Verifica si la dirección existe y la elimina de la base de datos usando su ID.
     public void eliminarDireccion(Long id) {
         log.info("Eliminando dirección ID: {}", id);
         if (!direccionRepository.existsById(id)) {

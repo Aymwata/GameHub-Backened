@@ -2,12 +2,15 @@ package com.gamehub.reviewservice.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "resenas")
 @Data
-public class Resena {
+@EqualsAndHashCode(callSuper = true)
+public class Resena extends Audit{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

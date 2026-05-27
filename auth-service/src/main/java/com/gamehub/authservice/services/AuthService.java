@@ -20,10 +20,13 @@ public class AuthService {
     private final CuentaAccesoRepository cuentaRepository;
     private final UserClient userClient;
 
+    // CREACIÓN DE CUENTA DE ACCESO CON COMUNICACIÓN REMOTA
+
     public CuentaAcceso crearCuenta(CuentaAccesoRequestDTO dto) {
         log.info("Iniciando creación de cuenta de acceso para email: {}", dto.getEmail());
 
-        // 1. Comunicación Remota: Validar si el usuario existe en user-service
+        // Valida si el usuario existe en user-service -----------
+
         try {
             log.info("Consultando al user-service por el email: {}", dto.getEmail());
             userClient.buscarPorEmail(dto.getEmail()); // Si falla o retorna 404, lanzará una excepción
@@ -35,12 +38,14 @@ public class AuthService {
             throw new RuntimeException("Error interno al comunicar con user-service.");
         }
 
-        // 2. Regla local: Validar que la cuenta de acceso no exista previamente
+        // Valida que la cuenta de acceso no exista previamente ------------
+
         if (cuentaRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("La cuenta de acceso ya se encuentra registrada.");
         }
 
-        // 3. Crear la cuenta
+        // 3. Crea la cuenta ---------
+
         CuentaAcceso cuenta = new CuentaAcceso();
         cuenta.setEmail(dto.getEmail());
         cuenta.setPassword(dto.getPassword());
@@ -53,20 +58,28 @@ public class AuthService {
         return guardado;
     }
 
+
+    // OBTENER LISTADO DE CUENTAS
     public List<CuentaAcceso> listarCuentas() {
         return cuentaRepository.findAll();
     }
+
+    // BÚSQUEDA EXACTA POR ID
 
     public CuentaAcceso buscarPorId(Long id) {
         return cuentaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada."));
     }
 
+    // BÚSQUEDA EXACTA POR EMAIL
+
     public CuentaAcceso buscarPorEmail(String email) {
         return cuentaRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada con ese email."));
     }
 
+    // ACTUALIZACIÓN DE CREDENCIALES
+    // Modifica únicamente la contraseña y el rol de una cuenta existente (sin cambiar el correo)
     public CuentaAcceso actualizarCuenta(Long id, CuentaAccesoRequestDTO dto) {
         log.info("Actualizando cuenta ID: {}", id);
         CuentaAcceso cuenta = buscarPorId(id);
@@ -76,6 +89,8 @@ public class AuthService {
         return cuentaRepository.save(cuenta);
     }
 
+    // DESACTIVACIÓN DE CUENTA
+    // cambia el estado de la cuenta para que este inactivo
     public CuentaAcceso desactivarCuenta(Long id) {
         log.info("Desactivando cuenta ID: {}", id);
         CuentaAcceso cuenta = buscarPorId(id);
@@ -83,7 +98,9 @@ public class AuthService {
         return cuentaRepository.save(cuenta);
     }
 
-    // Login simulado sin JWT
+    // SIMULACION DE AUTENTICACIÓN
+    // Valida que la contraseña coincida y que un usuario inactivo no pueda autenticarse.
+
     public String simularLogin(LoginRequestDTO dto) {
         log.info("Intento de login para email: {}", dto.getEmail());
 
@@ -93,7 +110,6 @@ public class AuthService {
             throw new IllegalArgumentException("Credenciales inválidas.");
         }
 
-        // Regla: Usuario inactivo no puede autenticarse
         if (!cuenta.getEstado()) {
             throw new IllegalArgumentException("La cuenta se encuentra inactiva.");
         }

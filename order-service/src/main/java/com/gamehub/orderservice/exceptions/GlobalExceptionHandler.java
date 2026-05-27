@@ -12,7 +12,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Captura nuestras validaciones de negocio
+    // Intercepta el OrdenException
     @ExceptionHandler(OrdenException.class)
     public ResponseEntity<Map<String, String>> manejarOrdenException(OrdenException ex) {
         Map<String, String> respuesta = new HashMap<>();
@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(respuesta, HttpStatus.BAD_REQUEST);
     }
 
-    // Captura validaciones de los DTOs (@NotNull, @Min, etc.)
+    // Captura validaciones de los DTOs
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> manejarValidaciones(MethodArgumentNotValidException ex) {
         Map<String, String> errores = new HashMap<>();

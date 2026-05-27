@@ -12,16 +12,18 @@ public class CuentaAcceso extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false)
-    private String password; // Guardado en texto plano por instrucción de no usar seguridad
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
-    @Column(nullable = false)
+    @Column(name = "rol", nullable = false, length = 50)
     private String rol;
 
+    @Column(name = "estado", nullable = false)
     private Boolean estado; // true = activo, false = inactivo
 }
