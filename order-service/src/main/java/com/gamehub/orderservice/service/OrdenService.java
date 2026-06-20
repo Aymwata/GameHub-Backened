@@ -133,6 +133,8 @@ public class OrdenService {
                 throw new OrdenException("El usuario está inactivo y no puede comprar");
             }
             return usuario;
+        } catch (OrdenException oe) {
+            throw oe;
         } catch (Exception e) {
             throw new OrdenException("Error al validar el usuario: No existe o el servicio no responde");
         }
