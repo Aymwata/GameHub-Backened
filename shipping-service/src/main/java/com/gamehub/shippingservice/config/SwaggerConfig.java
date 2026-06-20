@@ -1,4 +1,4 @@
-package com.gamehub.authservice.config;
+package com.gamehub.shippingservice.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -12,8 +12,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Auth Service API - GameHub")
+                        .title("Shipping Service API - GameHub")
                         .version("1.0.0")
-                        .description("Documentación interactiva para el microservicio de autenticación."));
+                        .description("Documentación interactiva para el microservicio de Envíos."));
     }
 }
