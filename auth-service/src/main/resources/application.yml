@@ -1,0 +1,48 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: Auth-service
+
+  # Configuración de Base de Datos H2
+  datasource:
+    url: jdbc:h2:file:./data/AuthDB
+    driverClassName: org.h2.Driver
+    username: sa
+    password: sa
+
+  # Consola Web de H2
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Configuración de JPA y Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+# Configuración de Logs para ver las consultas SQL
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+# Configuración de Swagger
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /doc/swagger-ui.html
