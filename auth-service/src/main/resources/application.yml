@@ -46,3 +46,8 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /doc/swagger-ui.html
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
