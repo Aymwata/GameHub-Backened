@@ -3,6 +3,7 @@ package com.gamehub.promotionservice;
 import com.gamehub.promotionservice.client.CategoryClient;
 import com.gamehub.promotionservice.client.ProductClient;
 import com.gamehub.promotionservice.models.Promotion;
+import com.gamehub.promotionservice.models.dto.PromotionRequestDTO;
 import com.gamehub.promotionservice.models.dto.PromotionResponseDTO;
 import com.gamehub.promotionservice.repositories.PromotionRepository;
 import com.gamehub.promotionservice.services.PromotionService;
@@ -11,19 +12,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PromotionServiceTest {
+public class PromotionServiceTest {
 
-    // 1. Declaramos TODOS los componentes que inyecta tu PromotionService
     @Mock
-    private PromotionRepository repository;
+    private PromotionRepository promotionRepository;
 
     @Mock
     private CategoryClient categoryClient;
@@ -35,50 +37,62 @@ class PromotionServiceTest {
     private PromotionService promotionService;
 
     @Test
-    @DisplayName("Debería retornar el DTO de la promoción si el código de cupón existe y está activo")
-    void testObtenerPorCodigoExitosamente() {
-        // 1. GIVEN: Configuración del escenario simulado
-        Promotion promoMock = new Promotion();
-        promoMock.setId(1L);
-        promoMock.setCodigo("GAMER20");
-        promoMock.setValor(20.0); // Usando el atributo real de tu entidad
-        promoMock.setEstado(true); // Usando el atributo real de tu entidad
+    @DisplayName("Test: Crear promoción exitosamente")
+    void crearPromocionExitosa() {
+        PromotionRequestDTO request = new PromotionRequestDTO();
+        request.setCodigo("GAMER20");
+        request.setTipo("PORCENTAJE");
+        request.setValor(20.0);
+        request.setFechaInicio(LocalDateTime.now());
+        request.setFechaFin(LocalDateTime.now().plusDays(10));
 
-        // Dejamos productoId y categoriaId nulos para no forzar la llamada a los FeignClients en este test básico
-        promoMock.setProductoId(null);
-        promoMock.setCategoriaId(null);
+        Promotion promoGuardada = new Promotion();
+        promoGuardada.setId(1L);
+        promoGuardada.setCodigo("GAMER20");
+        promoGuardada.setTipo("PORCENTAJE");
+        promoGuardada.setValor(20.0);
+        promoGuardada.setEstado(true);
 
-        // Simulamos que el repositorio encuentra la promoción
-        Mockito.when(repository.findByCodigo("GAMER20")).thenReturn(Optional.of(promoMock));
+        when(promotionRepository.findByCodigo("GAMER20")).thenReturn(Optional.empty());
+        when(promotionRepository.save(any(Promotion.class))).thenReturn(promoGuardada);
 
-        // 2. WHEN: Ejecución del método real
-        PromotionResponseDTO resultado = promotionService.obtenerPorCodigo("GAMER20");
+        PromotionResponseDTO resultado = promotionService.crearPromocion(request);
 
-        // 3. THEN: Validaciones
-        assertNotNull(resultado, "El DTO de respuesta no debería ser nulo");
-        assertEquals("GAMER20", resultado.getCodigo(), "El código del cupón en el DTO debe ser GAMER20");
-        assertEquals(20.0, resultado.getValor(), "El valor del descuento debe ser el esperado");
-        assertTrue(resultado.getEstado(), "El estado en el DTO debe ser true (activo)");
-
-        // Verificamos que se consultó a la base de datos exactamente 1 vez
-        Mockito.verify(repository, Mockito.times(1)).findByCodigo("GAMER20");
+        assertNotNull(resultado);
+        assertEquals("GAMER20", resultado.getCodigo());
+        assertEquals(20.0, resultado.getValor());
+        verify(promotionRepository, times(1)).save(any(Promotion.class));
     }
 
     @Test
-    @DisplayName("Debería lanzar una excepción si la promoción está inactiva")
-    void testObtenerPorCodigoInactivo() {
-        // 1. GIVEN
-        Promotion promoInactiva = new Promotion();
-        promoInactiva.setCodigo("GAMER20");
-        promoInactiva.setEstado(false); // Estado inactivo para provocar la validación
+    @DisplayName("Test: Fallo al crear promoción por fechas ilógicas")
+    void crearPromocionFalloFechas() {
+        PromotionRequestDTO request = new PromotionRequestDTO();
+        request.setCodigo("GAMER20");
+        request.setFechaInicio(LocalDateTime.now().plusDays(10));
+        request.setFechaFin(LocalDateTime.now());
 
-        Mockito.when(repository.findByCodigo("GAMER20")).thenReturn(Optional.of(promoInactiva));
-
-        // 2. WHEN & THEN: Verificamos que salte tu RuntimeException exacta
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            promotionService.obtenerPorCodigo("GAMER20");
+            promotionService.crearPromocion(request);
         });
 
-        assertEquals("Error: Este código de promoción se encuentra inactivo.", exception.getMessage());
+        assertTrue(exception.getMessage().contains("La fecha de inicio no puede ser posterior"));
+        verify(promotionRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Test: Desactivar promoción exitosamente")
+    void desactivarPromocionExitosa() {
+        Promotion promoExistente = new Promotion();
+        promoExistente.setId(1L);
+        promoExistente.setEstado(true);
+
+        when(promotionRepository.findById(1L)).thenReturn(Optional.of(promoExistente));
+        when(promotionRepository.save(any(Promotion.class))).thenReturn(promoExistente);
+
+        promotionService.desactivarPromocion(1L);
+
+        assertFalse(promoExistente.getEstado());
+        verify(promotionRepository, times(1)).save(promoExistente);
     }
 }
