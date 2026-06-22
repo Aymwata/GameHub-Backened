@@ -20,10 +20,10 @@ import static org.mockito.Mockito.*;
 class CategoriaServiceTest {
 
     @Mock
-    private CategoriaRepository repository; // Simulamos la base de datos H2
+    private CategoriaRepository repository;
 
     @InjectMocks
-    private CategoriaService service; // El servicio que estamos testeando
+    private CategoriaService service;
 
     @Test
     void crearCategoria_Exito() {
@@ -92,17 +92,17 @@ class CategoriaServiceTest {
         categoriaActiva.setEstado(true); // Está activa inicialmente
 
         when(repository.findById(5L)).thenReturn(Optional.of(categoriaActiva));
-        // Al guardar, devolvemos la misma categoría pero asumimos que el servicio le cambió el estado
+
         when(repository.save(any(Categoria.class))).thenReturn(categoriaActiva);
 
         // --- WHEN ---
         service.desactivarCategoria(5L);
 
         // --- THEN ---
-        // 1. Verificamos que el estado ahora sea FALSE
+
         assertFalse(categoriaActiva.getEstado(), "El estado de la categoría debió cambiar a false");
 
-        // 2. Verificamos que el método SAVE fue llamado para actualizar el registro (y NO el método delete)
+
         verify(repository, times(1)).save(categoriaActiva);
         verify(repository, never()).delete(any());
     }

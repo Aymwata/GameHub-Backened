@@ -19,26 +19,26 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Habilita el uso de Mockito en JUnit 5
+@ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 
     @Mock
-    private ProductRepository repository; // Simulamos la base de datos
+    private ProductRepository repository;
 
     @Mock
-    private CategoryClient categoryClient; // Simulamos la red externa (Feign)
+    private CategoryClient categoryClient;
 
     @InjectMocks
-    private ProductService service; // El servicio REAL que vamos a poner a prueba
+    private ProductService service;
 
     @Test
     void crearProducto_Exito() {
-        // --- GIVEN (Dado un contexto inicial) ---
+        // --- GIVEN  ---
         ProductoRequestDTO request = new ProductoRequestDTO();
         request.setNombre("RTX 5090");
         request.setMarca("NVIDIA");
         request.setModelo("Founders Edition");
-        request.setPrecio(1500.0); // Usamos double como acordamos para evitar fallos futuros
+        request.setPrecio(1500.0);
         request.setCategoriaId(1L);
 
         Product productoGuardado = new Product();
@@ -51,20 +51,19 @@ class ProductServiceTest {
         categoriaFalsa.setId(1L);
         categoriaFalsa.setNombre("Tarjetas Gráficas");
 
-        // Configuramos los Mocks: "Cuando el servicio llame a esto, responde esto"
+
         when(categoryClient.verificarExistencia(1L)).thenReturn(true);
         when(repository.save(any(Product.class))).thenReturn(productoGuardado);
         when(categoryClient.obtenerCategoriaPorId(1L)).thenReturn(categoriaFalsa);
 
-        // --- WHEN (Cuando ejecuto la acción) ---
+        // --- WHEN ---
         ProductoResponseDTO response = service.crearProducto(request);
 
-        // --- THEN (Entonces verifico que el resultado sea el esperado) ---
+        // --- THEN ---
         assertNotNull(response);
         assertEquals("RTX 5090", response.getNombre());
         assertEquals("Tarjetas Gráficas", response.getCategoria().getNombre());
 
-        // Verificamos que el repositorio y Feign realmente fueron llamados exactamente 1 vez
         verify(categoryClient, times(1)).verificarExistencia(1L);
         verify(repository, times(1)).save(any(Product.class));
     }
@@ -75,19 +74,15 @@ class ProductServiceTest {
         ProductoRequestDTO request = new ProductoRequestDTO();
         request.setCategoriaId(99L);
 
-        // El mock ahora miente y dice que la categoría NO existe
         when(categoryClient.verificarExistencia(99L)).thenReturn(false);
 
         // --- WHEN & THEN ---
-        // Verificamos que al intentar crear el producto, lance una RuntimeException
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             service.crearProducto(request);
         });
 
-        // Verificamos que el mensaje de la regla de negocio sea exacto
         assertEquals("Error: La categoría con ID 99 no existe.", exception.getMessage());
 
-        // Verificamos que la base de datos NUNCA intentó guardar (porque explotó antes)
         verify(repository, never()).save(any(Product.class));
     }
 
@@ -117,7 +112,7 @@ class ProductServiceTest {
     @Test
     void obtenerPorId_FallaPorProductoNoEncontrado() {
         // --- GIVEN ---
-        when(repository.findById(88L)).thenReturn(Optional.empty()); // La BD responde vacío
+        when(repository.findById(88L)).thenReturn(Optional.empty());
 
         // --- WHEN & THEN ---
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {

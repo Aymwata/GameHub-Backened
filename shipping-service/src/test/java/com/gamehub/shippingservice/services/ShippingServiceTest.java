@@ -25,13 +25,13 @@ import static org.mockito.Mockito.*;
 class ShippingServiceTest {
 
     @Mock
-    private ShippingRepository repository; // Simulamos BD
+    private ShippingRepository repository;
 
     @Mock
-    private OrderClient orderClient; // Simulamos red con Order-Service
+    private OrderClient orderClient;
 
     @Mock
-    private UserClient userClient; // Simulamos red con User-Service
+    private UserClient userClient;
 
     @InjectMocks
     private ShippingService service;
@@ -44,26 +44,22 @@ class ShippingServiceTest {
         request.setUserId(5L);
         request.setCarrier("Blue Express");
 
-        // 1. Simulamos que la orden SÍ está pagada
         OrderClientDTO ordenMock = new OrderClientDTO();
         ordenMock.setId(100L);
         ordenMock.setEstado("PAID");
 
-        // 2. Simulamos la lista de direcciones del usuario
         AddressClientDTO direccionMock = new AddressClientDTO();
         direccionMock.setCalle("Av. Siempreviva");
         direccionMock.setNumero("742");
         direccionMock.setComuna("Springfield");
         direccionMock.setCiudad("Capital City");
 
-        // 3. Simulamos lo que devuelve la base de datos al guardar
         Shipping shippingGuardado = new Shipping();
         shippingGuardado.setId(1L);
         shippingGuardado.setOrderId(100L);
         shippingGuardado.setAddress("Av. Siempreviva 742, Springfield, Capital City");
         shippingGuardado.setStatus("PREPARANDO");
 
-        // Configuramos Mocks
         when(orderClient.obtenerOrdenPorId(100L)).thenReturn(ordenMock);
         when(userClient.obtenerDireccionDelUsuario(5L)).thenReturn(List.of(direccionMock));
         when(repository.save(any(Shipping.class))).thenReturn(shippingGuardado);
@@ -76,7 +72,6 @@ class ShippingServiceTest {
         assertEquals("PREPARANDO", response.getStatus());
         assertEquals("Av. Siempreviva 742, Springfield, Capital City", response.getAddress());
 
-        // Verificamos la triple interacción
         verify(orderClient, times(1)).obtenerOrdenPorId(100L);
         verify(userClient, times(1)).obtenerDireccionDelUsuario(5L);
         verify(repository, times(1)).save(any(Shipping.class));
@@ -90,7 +85,7 @@ class ShippingServiceTest {
         request.setUserId(5L);
 
         OrderClientDTO ordenPendiente = new OrderClientDTO();
-        ordenPendiente.setEstado("PENDIENTE"); // El estado prohibido
+        ordenPendiente.setEstado("PENDIENTE");
 
         when(orderClient.obtenerOrdenPorId(100L)).thenReturn(ordenPendiente);
 
@@ -99,10 +94,8 @@ class ShippingServiceTest {
             service.crearDespacho(request);
         });
 
-        // REEMPLAZO AQUÍ: Verificamos el mensaje exacto que lanza tu código
         assertEquals("Error: No se puede despachar una orden que no esté PAGADA.", exception.getMessage());
 
-        // Verificamos que al fallar la primera regla, NUNCA se llamó al servicio de usuarios ni a la BD
         verify(userClient, never()).obtenerDireccionDelUsuario(anyLong());
         verify(repository, never()).save(any());
     }
@@ -114,18 +107,17 @@ class ShippingServiceTest {
         envioExistente.setId(1L);
         envioExistente.setStatus("EN_TRANSITO");
         envioExistente.setTrackingNumber("BLX-123");
-        assertNull(envioExistente.getDeliveryDate()); // Aseguramos que inicialmente no tiene fecha
+        assertNull(envioExistente.getDeliveryDate());
 
         when(repository.findById(1L)).thenReturn(Optional.of(envioExistente));
         when(repository.save(any(Shipping.class))).thenReturn(envioExistente);
 
         // --- WHEN ---
-        // El operador logístico lo marca como entregado
         ShippingResponseDTO response = service.actualizarDespacho(1L, "ENTREGADO", "BLX-123");
 
         // --- THEN ---
         assertEquals("ENTREGADO", response.getStatus());
-        assertNotNull(response.getDeliveryDate()); // Verificamos que la regla de negocio inyectó la fecha
+        assertNotNull(response.getDeliveryDate());
         verify(repository, times(1)).save(envioExistente);
     }
 }

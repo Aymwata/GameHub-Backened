@@ -47,7 +47,7 @@ springdoc:
     enabled: true
     path: /doc/swagger-ui.html
 
-# Cliente Eureka (Conexión a la red de microservicios)
+# Cliente Eureka
 eureka:
   client:
     service-url:
