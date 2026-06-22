@@ -1,4 +1,4 @@
-package com.gamehub.api_gateway;
+package com.gamehub.gatewayservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class ApiGatewayApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(ApiGatewayApplication.class, args);
-	}
-
+public class GatewayServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayServiceApplication.class, args);
+    }
 }

@@ -1,0 +1,175 @@
+# Punto de entrada único para toda la tienda
+server:
+  port: 8099 # Usaremos el puerto que definiste para tu Gateway
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      server:
+        webmvc: # LA PALABRA MÁGICA QUE FALTABA
+          routes:
+            # --- RUTAS DE NEGOCIO (APIs) ---
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/api/auth/**
+
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/directions/**, /api/users/**
+
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api/orders/**
+
+            - id: review-service
+              uri: lb://review-service
+              predicates:
+                - Path= /api/resenas/**
+
+            - id: category-service
+              uri: lb://category-service
+              predicates:
+                - Path=/api/categories/**
+
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+                - Path=/api/products/**
+
+            - id: shipping-service
+              uri: lb://shipping-service
+              predicates:
+                - Path=/api/shippings/**
+
+
+            - id: inventory-service
+              uri: lb://inventory-service
+              predicates:
+                - Path=/api/inventory/**
+
+            - id: payment-service
+              uri: lb://payment-service
+              predicates:
+                  - Path=/api/payments/**
+
+            - id: promotion-service
+              uri: lb://promotion-service
+              predicates:
+              - Path=/api/promotions/**
+
+
+
+
+            # --- RUTAS DE DOCUMENTACIÓN SWAGGER ---
+            # El Gateway recibe /api-docs/categoria y lo traduce (RewritePath) a /v3/api-docs 
+            # para que el microservicio lo entienda sin chocar entre ellos.
+            - id: auth-api-docs
+              uri: lb://auth-service
+              predicates:
+                - Path=/api-docs/auth
+              filters:
+                - RewritePath=/api-docs/auth, /v3/api-docs
+
+            - id: user-api-docs
+              uri: lb://user-service
+              predicates:
+                - Path=/api-docs/user
+              filters:
+                - RewritePath=/api-docs/user, /v3/api-docs
+
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api-docs/order
+              filters:
+                - RewritePath=/api-docs/order, /v3/api-docs
+
+            - id: review-service
+              uri: lb://review-service
+              predicates:
+                - Path=/api-docs/review
+              filters:
+                - RewritePath=/api-docs/review, /v3/api-docs
+
+            - id: category-api-docs
+              uri: lb://category-service
+              predicates:
+                - Path=/api-docs/category
+              filters:
+                - RewritePath=/api-docs/category, /v3/api-docs
+
+            - id: product-api-docs
+              uri: lb://product-service
+              predicates:
+                - Path=/api-docs/product
+              filters:
+                - RewritePath=/api-docs/product, /v3/api-docs
+
+            - id: shipping-api-docs
+              uri: lb://shipping-service
+              predicates:
+                - Path=/api-docs/shipping
+              filters:
+                - RewritePath=/api-docs/shipping, /v3/api-docs
+
+            - id: inventory-api-docs
+              uri: lb://inventory-service
+              predicates:
+                - Path=/api-docs/inventory
+              filters:
+                  - RewritePath=/api-docs/inventory, /v3/api-docs
+
+            - id: payment-api-docs
+              uri: lb://payment-service
+              predicates:
+                - Path=/api-docs/payment
+              filters:
+                  - RewritePath=/api-docs/payment, /v3/api-docs
+
+            - id: promotion-api-docs
+              uri: lb://promotion-service
+              predicates:
+                  - Path=/api-docs/promotion
+              filters:
+                  - RewritePath=/api-docs/promotion, /v3/api-docs
+# Conexión al servidor de descubrimiento
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+# Swagger UI Centralizado
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /docs/swagger-ui.html # Aquí entraremos para ver TODA la documentación junta
+    urls:
+      - name: 01. Seguridad (Auth)
+        url: /api-docs/auth
+      - name: 02. Categorías
+        url: /api-docs/category
+      - name: 03. Catálogo (Productos)
+        url: /api-docs/product
+      - name: 04. Logística (Envíos)
+        url: /api-docs/shipping
+      - name: 05. Inventario
+        url: /api-docs/inventory
+      - name: 06. Pagos
+        url: /api-docs/payment
+      - name: 07. Promociones
+        url: /api-docs/promotion
+      - name: 08. User
+        url: /api-docs/user
+      - name: 09. Order
+        url: /api-docs/order
+      - name: 10. Review
+        url: /api-docs/review
+
+# Clave secreta para la futura validación de seguridad (JWT)
+jwt:
+  secret: gamehub-super-secret-key-evaluacion-3-duoc-2026-0621
