@@ -68,8 +68,9 @@ public class AuthServiceTest {
     @Test
     void crearCuenta_exitosamente() {
         // GIVEN
-        doNothing().when(userClient).buscarPorEmail(anyString());
-        // Simulamos que la cuenta on existe
+        when(userClient.buscarPorEmail(anyString())).thenReturn(null);
+
+        // Simulamos que la cuenta no existe
         when(cuentaRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         // Simula el guardado
         when(cuentaRepository.save(any(CuentaAcceso.class))).thenReturn(cuenta);
@@ -105,7 +106,8 @@ public class AuthServiceTest {
     @Test
     void crearCuenta_fallaPorqueEmailYaExiste() {
         // GIVEN
-        doNothing().when(userClient).buscarPorEmail(anyString());
+        when(userClient.buscarPorEmail(anyString())).thenReturn(null);
+
         // Simulamos que la BD ya tiene una cuenta con ese correo
         when(cuentaRepository.findByEmail(anyString())).thenReturn(Optional.of(cuenta));
 

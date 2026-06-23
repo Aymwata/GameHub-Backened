@@ -1,11 +1,10 @@
-package com.gamehub.paymentservice;
+package com.gamehub.paymentservice.services;
 
 
 import com.gamehub.paymentservice.client.OrderClient;
 import com.gamehub.paymentservice.models.Pago;
 import com.gamehub.paymentservice.models.dto.*;
 import com.gamehub.paymentservice.repositories.PagoRepository;
-import com.gamehub.paymentservice.services.PagoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -35,21 +35,23 @@ public class ResenaService {
         UsuarioDTO usuario;
         try {
             usuario = userClient.buscarPorId(request.getUsuarioId());
-            if (usuario.getEstado() != null && !usuario.getEstado()) {
-                throw new BusinessRuleException("El usuario está inactivo.");
-            }
         } catch (Exception e) {
             throw new ResourceNotFoundException("Usuario no encontrado en el sistema.");
         }
 
-        // Validar Producto
+        // Validar si está activo
+        if (usuario.getEstado() != null && !usuario.getEstado()) {
+            throw new BusinessRuleException("El usuario está inactivo.");
+        }
+
+        //Validar si el Producto existe
         try {
             productClient.obtenerProducto(request.getProductoId());
         } catch (Exception e) {
             throw new ResourceNotFoundException("Producto no encontrado en el sistema.");
         }
 
-        // Validar Orden y que el cliente realmente compró el producto
+        //Validar si la Orden existe
         OrdenDTO orden;
         try {
             orden = orderClient.buscarPorId(request.getOrdenId());
@@ -57,6 +59,7 @@ public class ResenaService {
             throw new ResourceNotFoundException("Orden no encontrada en el sistema.");
         }
 
+        // 5. Validar pertenencia de la orden (Fuera del try-catch)
         if (!orden.getUsuarioId().equals(request.getUsuarioId())) {
             throw new BusinessRuleException("La orden no pertenece al usuario especificado.");
         }
