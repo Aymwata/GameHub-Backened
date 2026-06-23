@@ -120,9 +120,8 @@ public class ResenaServiceTest {
 
     @Test
     void crearResena_fallaPorUsuarioInactivo() {
-
         // GIVEN
-        when(resenaRepository.existsByOrdenIdAndProductoId(anyLong(), anyLong())).thenReturn(false);
+        when(resenaRepository.existsByOrdenIdAndProductoId(100L, 10L)).thenReturn(false);
         usuarioDTO.setEstado(false);
         when(userClient.buscarPorId(1L)).thenReturn(usuarioDTO);
 
@@ -136,13 +135,12 @@ public class ResenaServiceTest {
 
     @Test
     void crearResena_fallaPorqueLaOrdenEsDeOtroUsuario() {
-
         // GIVEN
-        when(resenaRepository.existsByOrdenIdAndProductoId(anyLong(), anyLong())).thenReturn(false);
+        when(resenaRepository.existsByOrdenIdAndProductoId(100L, 10L)).thenReturn(false);
         when(userClient.buscarPorId(1L)).thenReturn(usuarioDTO);
         when(productClient.obtenerProducto(10L)).thenReturn(productoDTO);
 
-        ordenDTO.setUsuarioId(99L); // se cambia al dueño de la orden simulada
+        ordenDTO.setUsuarioId(99L);
         when(orderClient.buscarPorId(100L)).thenReturn(ordenDTO);
 
         // WHEN Y THEN
@@ -155,23 +153,20 @@ public class ResenaServiceTest {
 
     @Test
     void crearResena_fallaPorqueNoComproEseProducto() {
-
         // GIVEN
-        when(resenaRepository.existsByOrdenIdAndProductoId(anyLong(), anyLong())).thenReturn(false);
+        when(resenaRepository.existsByOrdenIdAndProductoId(100L, 10L)).thenReturn(false);
         when(userClient.buscarPorId(1L)).thenReturn(usuarioDTO);
         when(productClient.obtenerProducto(10L)).thenReturn(productoDTO);
 
-        // Vaciamos los detalles de la orden simulada para que no contenga el producto 10
         ordenDTO.setDetalles(Collections.emptyList());
         when(orderClient.buscarPorId(100L)).thenReturn(ordenDTO);
 
-        // WHEN Y THEN
         BusinessRuleException exception = assertThrows(BusinessRuleException.class, () -> {
             resenaService.crearResena(requestDTO);
         });
-
         assertEquals("El usuario no compró este producto en la orden especificada. Solo puede reseñar quien compró el producto.", exception.getMessage());
     }
+
 
     //  PRUEBAS PARA OTRAS OPERACIONES
 

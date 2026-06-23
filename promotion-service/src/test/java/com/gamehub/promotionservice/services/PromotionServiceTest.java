@@ -1,4 +1,4 @@
-package com.gamehub.promotionservice;
+package com.gamehub.promotionservice.services;
 
 import com.gamehub.promotionservice.client.CategoryClient;
 import com.gamehub.promotionservice.client.ProductClient;
@@ -6,7 +6,6 @@ import com.gamehub.promotionservice.models.Promotion;
 import com.gamehub.promotionservice.models.dto.PromotionRequestDTO;
 import com.gamehub.promotionservice.models.dto.PromotionResponseDTO;
 import com.gamehub.promotionservice.repositories.PromotionRepository;
-import com.gamehub.promotionservice.services.PromotionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package com.gamehub.inventoryservice;
+package com.gamehub.inventoryservice.services;
 
 import com.gamehub.inventoryservice.client.ProductClient;
 import com.gamehub.inventoryservice.models.Inventory;
@@ -6,7 +6,6 @@ import com.gamehub.inventoryservice.models.MovimientoInventario;
 import com.gamehub.inventoryservice.models.dto.InventoryResponseDTO;
 import com.gamehub.inventoryservice.repositories.InventoryRepository;
 import com.gamehub.inventoryservice.repositories.MovimientoInventarioRepository;
-import com.gamehub.inventoryservice.services.InventoryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
