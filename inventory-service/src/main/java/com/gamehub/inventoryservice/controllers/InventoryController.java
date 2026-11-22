@@ -94,4 +94,14 @@ public class InventoryController {
         return ResponseEntity.ok(CollectionModel.of(inventarios,
                 linkTo(methodOn(InventoryController.class).listarTodoElInventario()).withSelfRel()));
     }
+
+    @Operation(summary = "Consultar stock disponible para el catálogo")
+    @GetMapping("/availability")
+    public List<Disponibilidad> listarDisponibilidad() {
+        return inventoryService.obtenerTodosLosInventarios().stream()
+                .map(inventario -> new Disponibilidad(inventario.getProductId(), inventario.getActualAvailable()))
+                .toList();
+    }
+
+    public record Disponibilidad(Long productId, Integer actualAvailable) {}
 }

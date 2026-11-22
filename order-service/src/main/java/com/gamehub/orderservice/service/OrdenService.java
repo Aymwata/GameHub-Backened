@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +94,10 @@ public class OrdenService {
     public Orden buscarPorId(Long id) {
         return ordenRepository.findById(id)
                 .orElseThrow(() -> new OrdenException("La orden no existe"));
+    }
+
+    public Optional<Orden> buscarPropia(Long id, Long usuarioId) {
+        return ordenRepository.findById(id).filter(orden -> usuarioId.equals(orden.getUsuarioId()));
     }
 
     // TRANSICION DE ESTADOS DE LA ORDEN

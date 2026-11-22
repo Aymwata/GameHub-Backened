@@ -4,10 +4,12 @@ import com.gamehub.inventoryservice.models.Inventory;
 import com.gamehub.inventoryservice.repositories.InventoryRepository;
 import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "gamehub.seed.random-data", havingValue = "true", matchIfMissing = true)
 public class DataFakerConfig {
 
     @Bean

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -25,12 +26,30 @@ public class UsuarioService {
             throw new IllegalArgumentException("El email ya se encuentra registrado.");
         }
 
+        return guardarPerfil(dto, null);
+    }
+
+    public Usuario registrarCliente(UsuarioRequestDTO dto, UUID registroId) {
+        var existente = usuarioRepository.findByEmailIgnoreCase(dto.getEmail());
+        if (existente.isPresent()) {
+            Usuario usuario = existente.get();
+            if (!registroId.equals(usuario.getRegistroAuthId())) {
+                throw new IllegalArgumentException("El email ya se encuentra registrado.");
+            }
+            return usuario;
+        }
+        dto.setRol("CLIENTE");
+        return guardarPerfil(dto, registroId);
+    }
+
+    private Usuario guardarPerfil(UsuarioRequestDTO dto, UUID registroId) {
         Usuario usuario = new Usuario();
         usuario.setNombre(dto.getNombre());
         usuario.setEmail(dto.getEmail());
         usuario.setTelefono(dto.getTelefono());
         usuario.setRol(dto.getRol());
         usuario.setEstado(true); // Activo por defecto
+        usuario.setRegistroAuthId(registroId);
 
         Usuario guardado = usuarioRepository.save(usuario);
         log.info("Usuario creado exitosamente con ID: {}", guardado.getId());

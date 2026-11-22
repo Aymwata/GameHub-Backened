@@ -5,6 +5,11 @@ server:
 spring:
   application:
     name: gateway-service
+  http:
+    clients:
+      imperative:
+        # El proxy reenvía cookies por solicitud. El cliente JDK no usa un almacén compartido.
+        factory: jdk
   cloud:
     gateway:
       server:
@@ -170,4 +175,4 @@ springdoc:
 
 
 jwt:
-  secret: palta2026
+  secret: ${JWT_SECRET}

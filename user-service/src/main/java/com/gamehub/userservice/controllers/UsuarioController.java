@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -34,8 +35,11 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Errores de validación en los datos enviados")
     })
     @PostMapping
-    public ResponseEntity<Usuario> crearUsuario(@Valid @RequestBody UsuarioRequestDTO dto) {
-        Usuario nuevoUsuario = usuarioService.crearUsuario(dto);
+    public ResponseEntity<Usuario> crearUsuario(@Valid @RequestBody UsuarioRequestDTO dto,
+            @Parameter(hidden = true) @RequestHeader(value = "X-GameHub-Registration", required = false) UUID registroId) {
+        Usuario nuevoUsuario = registroId == null
+                ? usuarioService.crearUsuario(dto)
+                : usuarioService.registrarCliente(dto, registroId);
         return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
     }
 

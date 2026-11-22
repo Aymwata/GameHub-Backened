@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,7 @@ public class CategoriaController {
             @ApiResponse(responseCode = "400", description = "Error de validación en los campos enviados", content = @Content)
     })
     @PostMapping
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<CategoriaResponseDTO> crearCategoria(@Valid @RequestBody CategoriaRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.crearCategoria(request));
     }
@@ -57,6 +59,7 @@ public class CategoriaController {
             @ApiResponse(responseCode = "404", description = "La categoría a actualizar no existe", content = @Content)
     })
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<CategoriaResponseDTO> actualizarCategoria(
             @PathVariable Long id,
             @Valid @RequestBody CategoriaRequestDTO request) {
@@ -69,6 +72,7 @@ public class CategoriaController {
             @ApiResponse(responseCode = "404", description = "La categoría no existe", content = @Content)
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> desactivarCategoria(@PathVariable Long id) {
         service.desactivarCategoria(id);
         return ResponseEntity.noContent().build();

@@ -1,189 +1,162 @@
 package com.gamehub.authservice.services;
 
-
 import com.gamehub.authservice.client.UserClient;
+import com.gamehub.authservice.config.AuthSecurityConfig;
 import com.gamehub.authservice.models.CuentaAcceso;
 import com.gamehub.authservice.models.Dtos.CuentaAccesoRequestDTO;
 import com.gamehub.authservice.models.Dtos.LoginRequestDTO;
 import com.gamehub.authservice.repositories.CuentaAccesoRepository;
+import com.gamehub.authservice.repositories.SesionRefreshRepository;
 import feign.FeignException;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.Optional;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.web.server.ResponseStatusException;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
-
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+class AuthServiceTest {
+    private static final String EMAIL = "jugador@gamehub.example";
+    private static final String PASSWORD = "secreto123";
+    private static final String HASH = AuthSecurityConfig.PASSWORD_PREFIX + "hash-de-prueba";
 
-    // MOCKS
-    @Mock
-    private CuentaAccesoRepository cuentaRepository;
+    @Mock private CuentaAccesoRepository cuentas;
+    @Mock private UserClient usuarios;
+    @Mock private SesionRefreshRepository sesiones;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private JwtEncoder jwtEncoder;
+    @InjectMocks private AuthService authService;
 
-    @Mock
-    private UserClient userClient;
-
-    // TEST
-    @InjectMocks
-    private AuthService authService;
-
-
-    private CuentaAccesoRequestDTO cuentaDto;
     private CuentaAcceso cuenta;
+    private CuentaAccesoRequestDTO cuentaDto;
     private LoginRequestDTO loginDto;
 
-
-    // Se ejecutra antes de cada @Test
     @BeforeEach
-    void setUp() {
-        // DTO simulado
+    void preparar() {
         cuentaDto = new CuentaAccesoRequestDTO();
-        cuentaDto.setEmail("jugador@gamehub.com");
-        cuentaDto.setPassword("secreto123");
+        cuentaDto.setEmail(EMAIL);
+        cuentaDto.setPassword(PASSWORD);
         cuentaDto.setRol("CLIENTE");
 
-        // entidad simulada
         cuenta = new CuentaAcceso();
         cuenta.setId(1L);
-        cuenta.setEmail("jugador@gamehub.com");
-        cuenta.setPassword("secreto123");
+        cuenta.setEmail(EMAIL);
+        cuenta.setPassword(HASH);
         cuenta.setRol("CLIENTE");
         cuenta.setEstado(true);
 
-        // DTO de Login simulado
         loginDto = new LoginRequestDTO();
-        loginDto.setEmail("jugador@gamehub.com");
-        loginDto.setPassword("secreto123");
-    }
-
-    //PRUEBAS PARA CREACIÓN DE CUENTA
-
-    @Test
-    void crearCuenta_exitosamente() {
-        // GIVEN
-        when(userClient.buscarPorEmail(anyString())).thenReturn(null);
-
-        // Simulamos que la cuenta no existe
-        when(cuentaRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        // Simula el guardado
-        when(cuentaRepository.save(any(CuentaAcceso.class))).thenReturn(cuenta);
-
-        // WHEN
-        CuentaAcceso resultado = authService.crearCuenta(cuentaDto);
-
-        // THEN
-        assertNotNull(resultado, "El resultado no debería ser nulo");
-        assertEquals("jugador@gamehub.com", resultado.getEmail(), "El email debe coincidir");
-        assertTrue(resultado.getEstado(), "La cuenta debe crearse con estado activo");
-        verify(cuentaRepository, times(1)).save(any(CuentaAcceso.class));
+        loginDto.setEmail(EMAIL);
+        loginDto.setPassword(PASSWORD);
+        loginDto.setPerfil(LoginRequestDTO.Perfil.CLIENTE);
     }
 
     @Test
-    void crearCuenta_fallaPorqueUsuarioNoExisteEnUserService() {
-        // GIVEN
-        // Simula que el UserClient lanza un error 404
-        FeignException.NotFound feignExceptionMock = mock(FeignException.NotFound.class);
-        doThrow(feignExceptionMock).when(userClient).buscarPorEmail(anyString());
+    void crearCuentaGuardaHashYVinculaPerfil() {
+        when(usuarios.buscarPorEmail(EMAIL)).thenReturn(perfil());
+        when(passwordEncoder.encode(PASSWORD)).thenReturn(HASH);
+        when(cuentas.save(any(CuentaAcceso.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // WHEN Y THEN
-        // Verificamos que se lance la excepcion correcta con el mensaje esperado
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            authService.crearCuenta(cuentaDto);
-        });
+        CuentaAcceso creada = authService.crearCuenta(cuentaDto);
 
-        assertEquals("Debe crear un perfil de usuario antes de crear una cuenta de acceso.", exception.getMessage());
-        // Verificamos que no se haya llamado a la BD para guardar
-        verify(cuentaRepository, never()).save(any(CuentaAcceso.class));
+        assertEquals(EMAIL, creada.getEmail());
+        assertEquals(HASH, creada.getPassword());
+        assertEquals(2L, creada.getUsuarioId());
+        assertTrue(creada.getEstado());
     }
 
     @Test
-    void crearCuenta_fallaPorqueEmailYaExiste() {
-        // GIVEN
-        when(userClient.buscarPorEmail(anyString())).thenReturn(null);
+    void crearCuentaRequierePerfilExistente() {
+        when(usuarios.buscarPorEmail(EMAIL)).thenThrow(mock(FeignException.NotFound.class));
 
-        // Simulamos que la BD ya tiene una cuenta con ese correo
-        when(cuentaRepository.findByEmail(anyString())).thenReturn(Optional.of(cuenta));
-
-        // WHEN Y THEN
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            authService.crearCuenta(cuentaDto);
-        });
-
-        assertEquals("La cuenta de acceso ya se encuentra registrada.", exception.getMessage());
-    }
-
-    //PRUEBAS PARA BÚSQUEDA
-
-    @Test
-    void buscarPorId_exitoso() {
-        // GIVEN
-        when(cuentaRepository.findById(1L)).thenReturn(Optional.of(cuenta));
-
-        // WHEN
-        CuentaAcceso resultado = authService.buscarPorId(1L);
-
-        // THEN
-        assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
+        assertThrows(IllegalArgumentException.class, () -> authService.crearCuenta(cuentaDto));
+        verify(cuentas, never()).save(any());
     }
 
     @Test
-    void buscarPorId_noEncontrado() {
-        // GIVEN
-        when(cuentaRepository.findById(99L)).thenReturn(Optional.empty());
+    void crearCuentaRechazaEmailDuplicado() {
+        when(cuentas.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(cuenta));
 
-        // WHEN Y THEN
-        assertThrows(IllegalArgumentException.class, () -> {
-            authService.buscarPorId(99L);
-        });
-    }
-
-    //PRUEBAS PARA LOGIN
-
-    @Test
-    void simularLogin_exitoso() {
-        // GIVEN
-        when(cuentaRepository.findByEmail(anyString())).thenReturn(Optional.of(cuenta));
-
-        // WHEN
-        String mensaje = authService.simularLogin(loginDto);
-
-        // THEN
-        assertEquals("Login exitoso. Bienvenido CLIENTE", mensaje);
+        assertThrows(IllegalArgumentException.class, () -> authService.crearCuenta(cuentaDto));
+        verifyNoInteractions(usuarios);
     }
 
     @Test
-    void simularLogin_fallaPorContrasenaIncorrecta() {
-        // GIVEN
-        loginDto.setPassword("contraseñaMala");
-        when(cuentaRepository.findByEmail(anyString())).thenReturn(Optional.of(cuenta));
+    void buscarPorIdDevuelveCuentaExistente() {
+        when(cuentas.findById(1L)).thenReturn(Optional.of(cuenta));
 
-        // WHEN Y THEN
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            authService.simularLogin(loginDto);
-        });
-
-        assertEquals("Credenciales inválidas.", exception.getMessage());
+        assertEquals(1L, authService.buscarPorId(1L).getId());
     }
 
     @Test
-    void simularLogin_fallaPorCuentaInactiva() {
-        // GIVEN
+    void buscarPorIdDevuelve404ParaCuentaInexistente() {
+        assertEquals(HttpStatus.NOT_FOUND,
+                assertThrows(ResponseStatusException.class, () -> authService.buscarPorId(99L)).getStatusCode());
+    }
+
+    @Test
+    void loginMigraPasswordAnteriorYEmiteSesion() {
+        prepararCuentaParaLogin();
+        cuenta.setPassword(PASSWORD);
+        when(usuarios.buscarPorEmail(EMAIL)).thenReturn(perfil());
+        when(passwordEncoder.encode(PASSWORD)).thenReturn(HASH);
+        when(jwtEncoder.encode(any())).thenReturn(Jwt.withTokenValue("jwt-de-prueba")
+                .header("alg", "HS256").subject("2").build());
+
+        AuthService.Sesion sesion = authService.login(loginDto);
+
+        assertEquals(HASH, cuenta.getPassword());
+        assertEquals(2L, sesion.acceso().usuario().id());
+        assertEquals("CLIENTE", sesion.acceso().usuario().rol());
+        assertEquals("jwt-de-prueba", sesion.acceso().accessToken());
+        assertEquals(43, sesion.refreshToken().length());
+        verify(sesiones).save(any());
+    }
+
+    @Test
+    void loginRechazaPasswordIncorrecta() {
+        prepararCuentaParaLogin();
+        assertLoginError(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void loginRechazaCuentaInactiva() {
+        prepararCuentaParaLogin();
         cuenta.setEstado(false);
-        when(cuentaRepository.findByEmail(anyString())).thenReturn(Optional.of(cuenta));
+        assertLoginError(HttpStatus.UNAUTHORIZED);
+    }
 
-        // WHEN Y THEN
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            authService.simularLogin(loginDto);
-        });
+    @Test
+    void loginRechazaVistaAdminParaUnClienteConPasswordValida() {
+        prepararCuentaParaLogin();
+        loginDto.setPerfil(LoginRequestDTO.Perfil.ADMIN);
+        when(passwordEncoder.matches(PASSWORD, HASH)).thenReturn(true);
+        assertLoginError(HttpStatus.FORBIDDEN);
+    }
 
-        assertEquals("La cuenta se encuentra inactiva.", exception.getMessage());
+    private void prepararCuentaParaLogin() {
+        when(cuentas.findByEmailIgnoreCase(EMAIL)).thenReturn(Optional.of(cuenta));
+        when(cuentas.bloquearPorId(1L)).thenReturn(Optional.of(cuenta));
+    }
+
+    private void assertLoginError(HttpStatus estado) {
+        assertEquals(estado,
+                assertThrows(ResponseStatusException.class, () -> authService.login(loginDto)).getStatusCode());
+        verifyNoInteractions(jwtEncoder, sesiones);
+    }
+
+    private UserClient.UsuarioPerfil perfil() {
+        return new UserClient.UsuarioPerfil(2L, "Jugador", EMAIL, true);
     }
 }

@@ -1,8 +1,10 @@
 package com.gamehub.userservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
+import java.util.UUID;
 
 
 @Data
@@ -29,6 +31,9 @@ public class Usuario extends Audit{             //AL USAR HERENCIA YA UTILIZARA 
 
     @Column(name = "estado", nullable = false)
     private Boolean estado; // true = activo, false = inactivo
+
+    @JsonIgnore
+    private UUID registroAuthId;
 
     // Relación bidireccional con direcciones
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

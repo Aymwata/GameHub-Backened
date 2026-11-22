@@ -1,8 +1,11 @@
 package com.gamehub.authservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -19,6 +22,8 @@ public class CuentaAcceso extends Audit {
     private String email;
 
     @Column(name = "password", nullable = false, length = 255)
+    @JsonIgnore
+    @ToString.Exclude
     private String password;
 
     @Column(name = "rol", nullable = false, length = 50)
@@ -26,4 +31,10 @@ public class CuentaAcceso extends Audit {
 
     @Column(name = "estado", nullable = false)
     private Boolean estado; // true = activo, false = inactivo
+
+    @JsonIgnore
+    private UUID registroId;
+
+    @JsonIgnore
+    private Long usuarioId;
 }

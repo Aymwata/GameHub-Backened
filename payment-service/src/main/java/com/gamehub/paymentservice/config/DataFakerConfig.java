@@ -4,10 +4,12 @@ import com.gamehub.paymentservice.models.Pago;
 import com.gamehub.paymentservice.repositories.PagoRepository;
 import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "gamehub.seed.random-data", havingValue = "true", matchIfMissing = true)
 public class DataFakerConfig {
 
     @Bean
