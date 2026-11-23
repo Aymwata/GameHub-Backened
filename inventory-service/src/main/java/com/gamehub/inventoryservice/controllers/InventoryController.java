@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -59,18 +62,18 @@ public class InventoryController {
         ));
     }
 
-    @Operation(summary = "Liberar stock reservado", description = "Devuelve al stock disponible una reserva cancelada")
-    @PutMapping("/release")
-    public ResponseEntity<Map<String, String>> release(
-            @RequestParam Long productId,
-            @RequestParam Integer quantity) {
-        inventoryService.releaseReservedStock(productId, quantity);
-        return ResponseEntity.ok(Map.of(
-                "message", "Reserva liberada correctamente",
-                "productId", productId.toString(),
-                "status", "SUCCESS"
-        ));
+    @Operation(summary = "Rebajar stock disponible manualmente")
+    @PutMapping("/remove")
+    public ResponseEntity<InventoryResponseDTO> rebajarStock(@Valid @RequestBody InventoryRequestDTO dto) {
+        return ResponseEntity.ok(inventoryService.rebajarStockDisponible(dto));
     }
+    @Operation(summary = "Liberar las reservas de una orden cancelada")
+    @PutMapping("/release/{ordenId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void liberarReserva(@PathVariable @Positive Long ordenId, @Valid @RequestBody LiberacionReserva solicitud) {
+        inventoryService.liberarReserva(ordenId, solicitud.cantidades());
+    }
+
     @Operation(summary = "Ver historial de movimientos", description = "Obtiene todos los ingresos y reservas de un producto")
     @GetMapping("/{productId}/movimientos")
     public ResponseEntity<CollectionModel<EntityModel<MovimientoResponseDTO>>> verHistorial(@PathVariable Long productId) {
@@ -116,5 +119,6 @@ public class InventoryController {
     }
 
     public record Disponibilidad(Long productId, Integer actualAvailable) {}
-}
 
+    public record LiberacionReserva(@NotEmpty Map<@NotNull @Positive Long, @NotNull @Positive Integer> cantidades) {}
+}

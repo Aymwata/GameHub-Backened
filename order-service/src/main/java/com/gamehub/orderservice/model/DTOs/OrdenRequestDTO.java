@@ -1,5 +1,6 @@
 package com.gamehub.orderservice.model.DTOs;
 
+import com.gamehub.orderservice.model.DatosCheckout;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,16 +13,10 @@ public class OrdenRequestDTO {
     @NotNull(message = "El ID del usuario es obligatorio")
     private Long usuarioId;
 
-    private String nombreContacto;
-    private String correoContacto;
-    private String telefonoContacto;
-    private String region;
-    private String ciudad;
-    private String comuna;
-    private String calle;
-    private String numero;
-
     private String codigoPromocion; // Opcional
+
+    @Valid
+    private DatosCheckout datosCheckout;
 
     @NotEmpty(message = "La orden debe tener al menos un detalle")
     @Valid

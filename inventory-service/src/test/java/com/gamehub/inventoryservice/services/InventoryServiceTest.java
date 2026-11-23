@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +71,7 @@ public class InventoryServiceTest {
         inventarioSimulado.setStockAvailable(50);
         inventarioSimulado.setStockReserved(5);
 
-        when(inventoryRepository.findByProductId(10L)).thenReturn(Optional.of(inventarioSimulado));
+        when(inventoryRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.of(inventarioSimulado));
         when(inventoryRepository.save(any(Inventory.class))).thenReturn(inventarioSimulado);
         when(movimientoRepository.save(any(MovimientoInventario.class))).thenReturn(new MovimientoInventario());
 
@@ -94,7 +95,7 @@ public class InventoryServiceTest {
         inventarioSimulado.setStockReserved(15);
 
 
-        when(inventoryRepository.findByProductId(10L)).thenReturn(Optional.of(inventarioSimulado));
+        when(inventoryRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.of(inventarioSimulado));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             inventoryService.reserveStock(10L, 10);
@@ -102,5 +103,21 @@ public class InventoryServiceTest {
 
         assertTrue(exception.getMessage().contains("Stock disponible insuficiente"));
         verify(inventoryRepository, never()).save(any());
+    }
+
+    @Test
+    void devuelveLasReservasDeUnaOrdenUnaSolaVez() {
+        Inventory inventario = new Inventory();
+        inventario.setStockAvailable(20);
+        inventario.setStockReserved(5);
+        when(inventoryRepository.findByProductIdForUpdate(10L)).thenReturn(Optional.of(inventario));
+        when(movimientoRepository.existsByOrdenIdAndTipo(50L, "LIBERACION_RESERVA")).thenReturn(false, true);
+
+        inventoryService.liberarReserva(50L, Map.of(10L, 2));
+        inventoryService.liberarReserva(50L, Map.of(10L, 2));
+
+        assertEquals(3, inventario.getStockReserved());
+        verify(movimientoRepository).save(argThat(movimiento -> movimiento.getOrdenId().equals(50L)
+                && movimiento.getCantidad().equals(2)));
     }
 }

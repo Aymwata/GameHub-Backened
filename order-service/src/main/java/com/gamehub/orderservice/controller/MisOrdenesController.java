@@ -2,6 +2,7 @@ package com.gamehub.orderservice.controller;
 
 import com.gamehub.orderservice.model.DTOs.DetalleOrdenRequestDTO;
 import com.gamehub.orderservice.model.DTOs.OrdenRequestDTO;
+import com.gamehub.orderservice.model.DatosCheckout;
 import com.gamehub.orderservice.model.Orden;
 import com.gamehub.orderservice.service.OrdenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,10 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,14 +45,7 @@ public class MisOrdenesController {
         OrdenRequestDTO request = new OrdenRequestDTO();
         request.setUsuarioId(usuarioId(token));
         request.setCodigoPromocion(compra.codigoPromocion());
-        request.setNombreContacto(compra.nombreContacto());
-        request.setCorreoContacto(compra.correoContacto());
-        request.setTelefonoContacto(compra.telefonoContacto());
-        request.setRegion(compra.region());
-        request.setCiudad(compra.ciudad());
-        request.setComuna(compra.comuna());
-        request.setCalle(compra.calle());
-        request.setNumero(compra.numero());
+        request.setDatosCheckout(compra.datosCheckout());
         request.setDetalles(compra.detalles());
         return ResponseEntity.status(HttpStatus.CREATED).body(ordenService.crearOrden(request));
     }
@@ -64,15 +54,6 @@ public class MisOrdenesController {
         return Long.valueOf(token.getSubject());
     }
 
-    public record OrdenPropiaRequest(String codigoPromocion,
-            @NotBlank @Size(max = 100) String nombreContacto,
-            @NotBlank @Email @Size(max = 100) String correoContacto,
-            @NotBlank @Pattern(regexp = "\\d{9}") String telefonoContacto,
-            @NotBlank @Size(max = 100) String region,
-            @NotBlank @Size(max = 100) String ciudad,
-            @NotBlank @Size(max = 100) String comuna,
-            @NotBlank @Size(max = 150) String calle,
-            @NotBlank @Size(max = 20) String numero,
+    public record OrdenPropiaRequest(String codigoPromocion, @Valid DatosCheckout datosCheckout,
             @NotEmpty List<@Valid @NotNull DetalleOrdenRequestDTO> detalles) {}
 }
-
