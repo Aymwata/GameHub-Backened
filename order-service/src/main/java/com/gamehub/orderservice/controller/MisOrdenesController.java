@@ -2,6 +2,7 @@ package com.gamehub.orderservice.controller;
 
 import com.gamehub.orderservice.model.DTOs.DetalleOrdenRequestDTO;
 import com.gamehub.orderservice.model.DTOs.OrdenRequestDTO;
+import com.gamehub.orderservice.model.DatosCheckout;
 import com.gamehub.orderservice.model.Orden;
 import com.gamehub.orderservice.service.OrdenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,6 +45,7 @@ public class MisOrdenesController {
         OrdenRequestDTO request = new OrdenRequestDTO();
         request.setUsuarioId(usuarioId(token));
         request.setCodigoPromocion(compra.codigoPromocion());
+        request.setDatosCheckout(compra.datosCheckout());
         request.setDetalles(compra.detalles());
         return ResponseEntity.status(HttpStatus.CREATED).body(ordenService.crearOrden(request));
     }
@@ -52,6 +54,6 @@ public class MisOrdenesController {
         return Long.valueOf(token.getSubject());
     }
 
-    public record OrdenPropiaRequest(String codigoPromocion,
+    public record OrdenPropiaRequest(String codigoPromocion, @Valid DatosCheckout datosCheckout,
             @NotEmpty List<@Valid @NotNull DetalleOrdenRequestDTO> detalles) {}
 }

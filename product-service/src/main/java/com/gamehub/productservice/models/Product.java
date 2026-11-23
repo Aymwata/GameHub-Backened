@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import java.util.Map;
 
 @Entity
 @Table(name = "productos")
@@ -27,7 +30,14 @@ public class Product extends Audit{
     @Column(nullable = false)
     private String modelo;
 
+    @Column(length = 2000)
     private String descripcion;
+
+    @Column(length = 600)
+    private String imagen;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> especificaciones;
 
     @Column(nullable = false)
     private Double precio;

@@ -3,7 +3,9 @@ package com.gamehub.productservice.models.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import java.util.Map;
 
 @Data
 public class ProductoRequestDTO {
@@ -16,7 +18,14 @@ public class ProductoRequestDTO {
     @NotBlank(message = "El modelo es obligatorio")
     private String modelo;
 
+    @Size(max = 2000)
     private String descripcion;
+
+    @Size(max = 600)
+    private String imagen;
+
+    @Size(max = 40)
+    private Map<@NotBlank @Size(max = 80) String, @NotBlank @Size(max = 500) String> especificaciones;
 
     @NotNull(message = "El precio es obligatorio")
     @Min(value = 0, message = "El precio no puede ser negativo")

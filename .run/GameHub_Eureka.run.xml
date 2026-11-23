@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration name="GameHub Demo - Eureka" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SERVER_ADDRESS" value="127.0.0.1" />
+    </envs>
+    <module name="eureka-server" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.gamehub.eureka_server.EurekaServerApplication" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="VM_PARAMETERS" value="-Xmx384m" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

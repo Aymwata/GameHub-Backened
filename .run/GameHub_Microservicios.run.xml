@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration name="GameHub Demo - Microservicios" type="CompoundRunConfigurationType">
+    <toRun name="GameHub Demo - Auth" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Category" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Inventory" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Order" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Payment" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Product" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Promotion" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Review" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - Shipping" type="SpringBootApplicationConfigurationType" />
+    <toRun name="GameHub Demo - User" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>

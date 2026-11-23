@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration name="GameHub Demo - Review" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SERVER_ADDRESS" value="127.0.0.1" />
+      <env name="EUREKA_INSTANCE_HOSTNAME" value="127.0.0.1" />
+      <env name="EUREKA_INSTANCE_PREFER_IP_ADDRESS" value="false" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:h2:file:./.local/demo-data/ReviewDB" />
+    </envs>
+    <module name="review-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.gamehub.reviewservice.ReviewServiceApplication" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="VM_PARAMETERS" value="-Xmx384m" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

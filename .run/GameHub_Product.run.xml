@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration name="GameHub Demo - Product" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SERVER_ADDRESS" value="127.0.0.1" />
+      <env name="EUREKA_INSTANCE_HOSTNAME" value="127.0.0.1" />
+      <env name="EUREKA_INSTANCE_PREFER_IP_ADDRESS" value="false" />
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:h2:file:./.local/demo-data/ProductDB" />
+      <env name="SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION" value="true" />
+      <env name="SPRING_SQL_INIT_MODE" value="always" />
+      <env name="SPRING_SQL_INIT_DATA_LOCATIONS" value="classpath:demo-data.sql" />
+      <env name="SPRING_SQL_INIT_ENCODING" value="UTF-8" />
+    </envs>
+    <module name="product-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.gamehub.productservice.ProductServiceApplication" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="VM_PARAMETERS" value="-Xmx384m" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

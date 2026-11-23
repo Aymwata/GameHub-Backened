@@ -8,6 +8,7 @@ import com.gamehub.productservice.models.dto.ProductoResponseDTO;
 import com.gamehub.productservice.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,8 @@ public class ProductService {
         dto.setMarca(producto.getMarca());
         dto.setModelo(producto.getModelo());
         dto.setDescripcion(producto.getDescripcion());
+        dto.setImagen(producto.getImagen());
+        dto.setEspecificaciones(producto.getEspecificaciones());
         dto.setPrecio(producto.getPrecio());
 
         dto.setEstado(producto.getEstado());
@@ -52,6 +55,8 @@ public class ProductService {
         nuevo.setMarca(request.getMarca());
         nuevo.setModelo(request.getModelo());
         nuevo.setDescripcion(request.getDescripcion());
+        nuevo.setImagen(request.getImagen());
+        nuevo.setEspecificaciones(request.getEspecificaciones());
         nuevo.setPrecio(request.getPrecio());
         nuevo.setCategoriaId(request.getCategoriaId());
 
@@ -68,8 +73,16 @@ public class ProductService {
     }
 
     public ProductoResponseDTO obtenerPorId(Long id) {
-        Product producto = repository.findById(id)
+        return mapToDTO(buscarProducto(id));
+    }
+
+    @Transactional
+    public void desactivarProducto(Long id) {
+        buscarProducto(id).setEstado(false);
+    }
+
+    private Product buscarProducto(Long id) {
+        return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
-        return mapToDTO(producto);
     }
 }

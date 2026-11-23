@@ -53,4 +53,11 @@ public class ProductController {
     public ResponseEntity<ProductoResponseDTO> obtenerProducto(@PathVariable Long id) {
         return ResponseEntity.ok(service.obtenerPorId(id));
     }
+
+    @Operation(summary = "Retirar un producto de la tienda conservando su referencia histórica")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping("/{id}/desactivar")
+    public void desactivarProducto(@PathVariable Long id) {
+        service.desactivarProducto(id);
+    }
 }

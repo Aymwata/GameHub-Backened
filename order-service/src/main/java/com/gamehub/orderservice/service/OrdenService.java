@@ -40,6 +40,7 @@ public class OrdenService {
         Orden nuevaOrden = new Orden();
         nuevaOrden.setUsuarioId(usuario.getId());
         nuevaOrden.setEstado("PENDIENTE");
+        nuevaOrden.setDatosCheckout(request.getDatosCheckout());
         nuevaOrden.setDetalles(new ArrayList<>());
 
         double subtotal = 0.0;

@@ -1,6 +1,7 @@
 package com.gamehub.productservice.models.dto;
 
 import lombok.Data;
+import java.util.Map;
 
 @Data
 public class ProductoResponseDTO {
@@ -9,6 +10,8 @@ public class ProductoResponseDTO {
     private String marca;
     private String modelo;
     private String descripcion;
+    private String imagen;
+    private Map<String, String> especificaciones;
     private Double precio;
     private Boolean estado;
 
