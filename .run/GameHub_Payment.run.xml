@@ -4,7 +4,6 @@
       <env name="SERVER_ADDRESS" value="127.0.0.1" />
       <env name="EUREKA_INSTANCE_HOSTNAME" value="127.0.0.1" />
       <env name="EUREKA_INSTANCE_PREFER_IP_ADDRESS" value="false" />
-      <env name="GAMEHUB_SEED_RANDOM_DATA" value="false" />
       <env name="SPRING_DATASOURCE_URL" value="jdbc:h2:file:./.local/demo-data/PaymentDB" />
     </envs>
     <module name="payment-service" />

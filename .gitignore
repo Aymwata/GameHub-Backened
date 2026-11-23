@@ -1,5 +1,9 @@
 HELP.md
 /.local/
+*.mv.db
+*.trace.db
+*.lock.db
+/data/INPUTs creacion.docx
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

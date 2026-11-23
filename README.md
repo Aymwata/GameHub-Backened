@@ -33,7 +33,7 @@ El ecosistema está compuesto por un Directorio de Descubrimiento, un API Gatewa
 
 ## Tecnologías Utilizadas
 
-* **Framework Principal:** Spring Boot 3 / Java
+* **Framework Principal:** Spring Boot 4 / Java
 * **Red y Enrutamiento:** Spring Cloud Netflix Eureka, Spring Cloud Gateway (WebMVC)
 * **Comunicación Interna:** OpenFeign Client
 * **Seguridad:** Spring Security, OAuth2 Resource Server (JWT Stateless)
@@ -70,7 +70,7 @@ Para apagar el backend, abre **View → Tool Windows → Services** y usa el bot
 | Administrador | `admin@gamehub.cl` | `admin1234` |
 | Cliente | `cliente@gamehub.cl` | `cliente1234` |
 
-Las configuraciones compartidas están en `.run`. Crean sus propias bases H2 en `.local/demo-data` y cargan las cuentas, categorías, productos e inventario desde los archivos `src/main/resources/demo-data.sql` de cada servicio. Los datos se conservan al reiniciar. El archivo [catalogo-demo.json](data/catalogo-demo.json) sirve como referencia de los productos iniciales. Las bases de arranques anteriores que usaban `.local/data` se pueden seguir usando desde sus configuraciones locales de IntelliJ.
+Las configuraciones compartidas están en `.run`. Crean sus propias bases H2 en `.local/demo-data` y cargan las cuentas, categorías, productos e inventario desde los archivos `src/main/resources/demo-data.sql` de cada servicio. El [SQL de Product](product-service/src/main/resources/demo-data.sql) contiene las fichas iniciales. Los datos se conservan al reiniciar y los archivos de H2 quedan fuera de Git. Las bases de arranques anteriores que usaban `.local/data` se pueden seguir usando desde sus configuraciones locales de IntelliJ.
 
 Para agregar productos o ingresar stock, usa la [vista de administración](http://127.0.0.1:5173/admin). Para cambiar una contraseña de prueba desde la API, inicia sesión como administrador, consulta `GET /api/auth/cuentas` y usa `PUT /api/auth/cuentas/{id}` con el correo, el rol y la nueva contraseña.
 
