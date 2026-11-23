@@ -1,5 +1,9 @@
 package com.gamehub.productservice.controllers;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import com.gamehub.productservice.models.dto.ProductoRequestDTO;
 import com.gamehub.productservice.models.dto.ProductoResponseDTO;
 import com.gamehub.productservice.services.ProductService;
@@ -16,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -60,4 +65,15 @@ public class ProductController {
     public void desactivarProducto(@PathVariable Long id) {
         service.desactivarProducto(id);
     }
+
+    @Operation(summary = "Actualizar las especificaciones de un producto")
+    @PutMapping("/{id}/detalles-tecnicos")
+    public ProductoResponseDTO actualizarDetallesTecnicos(
+            @PathVariable Long id, @Valid @RequestBody EspecificacionesRequest request) {
+        return service.actualizarEspecificaciones(id, request.especificaciones());
+    }
+
+    public record EspecificacionesRequest(
+            @JsonAlias("detallesTecnicos") @NotNull @Size(max = 40)
+            Map<@NotBlank @Size(max = 80) String, @NotBlank @Size(max = 500) String> especificaciones) {}
 }

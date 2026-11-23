@@ -15,12 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
+
+    private static final String LIBERACION_RESERVA = "LIBERACION_RESERVA";
 
     private final InventoryRepository inventoryRepository;
     private final ProductClient productClient;
@@ -36,7 +40,7 @@ public class InventoryService {
         this.validarExistenciaEnCatalogo(dto.getProductId());
 
 
-        Inventory inventory = inventoryRepository.findByProductId(dto.getProductId())
+        Inventory inventory = inventoryRepository.findByProductIdForUpdate(dto.getProductId())
                 .orElseGet(Inventory::new);
 
 
@@ -65,7 +69,10 @@ public class InventoryService {
     public void reserveStock(Long productId, Integer quantity) {
         log.info("Solicitud de reserva: {} unidades para Producto ID: {}", quantity, productId);
 
-        Inventory inv = inventoryRepository.findByProductId(productId)
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("La cantidad a reservar debe ser positiva");
+        }
+        Inventory inv = inventoryRepository.findByProductIdForUpdate(productId)
                 .orElseThrow(() -> {
                     log.error("No se encontró registro de inventario para el producto: {}", productId);
                     return new RuntimeException("Error: Registro de inventario inexistente.");
@@ -91,6 +98,31 @@ public class InventoryService {
         movimientoRepository.save(movimiento);
 
         log.info("Reserva completada satisfactoriamente.");
+    }
+
+    @Transactional
+    public void liberarReserva(Long ordenId, Map<Long, Integer> cantidades) {
+        Map<Long, Inventory> inventarios = new TreeMap<>();
+        // Bloquea el stock en el mismo orden antes de comprobar si ya se procesó la cancelación.
+        for (Long productId : new TreeMap<>(cantidades).keySet()) {
+            Inventory inventario = inventoryRepository.findByProductIdForUpdate(productId)
+                    .orElseThrow(() -> new IllegalArgumentException("No existe inventario para el producto " + productId));
+            inventarios.put(productId, inventario);
+        }
+        if (movimientoRepository.existsByOrdenIdAndTipo(ordenId, LIBERACION_RESERVA)) return;
+
+        for (var entrada : inventarios.entrySet()) {
+            Long productId = entrada.getKey();
+            Inventory inventario = entrada.getValue();
+            int cantidad = cantidades.get(productId);
+            if (cantidad <= 0 || inventario.getStockReserved() < cantidad) {
+                throw new IllegalArgumentException("Cantidad inválida para la reserva del producto " + productId);
+            }
+            inventario.setStockReserved(inventario.getStockReserved() - cantidad);
+            movimientoRepository.save(MovimientoInventario.builder()
+                    .ordenId(ordenId).productId(productId).tipo(LIBERACION_RESERVA).cantidad(cantidad)
+                    .build());
+        }
     }
 
 

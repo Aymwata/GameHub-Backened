@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +58,7 @@ public class ProductService {
         nuevo.setModelo(request.getModelo());
         nuevo.setDescripcion(request.getDescripcion());
         nuevo.setImagen(request.getImagen());
-        nuevo.setEspecificaciones(request.getEspecificaciones());
+        nuevo.setEspecificaciones(normalizarEspecificaciones(request.getEspecificaciones()));
         nuevo.setPrecio(request.getPrecio());
         nuevo.setCategoriaId(request.getCategoriaId());
 
@@ -79,6 +81,20 @@ public class ProductService {
     @Transactional
     public void desactivarProducto(Long id) {
         buscarProducto(id).setEstado(false);
+    }
+
+    @Transactional
+    public ProductoResponseDTO actualizarEspecificaciones(Long id, Map<String, String> especificaciones) {
+        Product producto = buscarProducto(id);
+        producto.setEspecificaciones(normalizarEspecificaciones(especificaciones));
+        return mapToDTO(producto);
+    }
+
+    private Map<String, String> normalizarEspecificaciones(Map<String, String> especificaciones) {
+        if (especificaciones == null) return null;
+        Map<String, String> resultado = new LinkedHashMap<>();
+        especificaciones.forEach((nombre, valor) -> resultado.put(nombre.strip(), valor.strip()));
+        return resultado;
     }
 
     private Product buscarProducto(Long id) {

@@ -27,5 +27,6 @@ public class MovimientoInventario extends Audit {
     @Column(nullable = false)
     private Integer cantidad;
 
+    private Long ordenId;
 
 }

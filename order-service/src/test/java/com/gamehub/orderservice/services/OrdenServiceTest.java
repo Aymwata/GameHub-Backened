@@ -6,6 +6,7 @@ import com.gamehub.orderservice.client.PromocionClient;
 import com.gamehub.orderservice.client.UsuarioClient;
 import com.gamehub.orderservice.exceptions.OrdenException;
 import com.gamehub.orderservice.model.DTOs.*;
+import com.gamehub.orderservice.model.DetalleOrden;
 import com.gamehub.orderservice.model.Orden;
 import com.gamehub.orderservice.repository.OrdenRepository;
 import com.gamehub.orderservice.service.OrdenService;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.List;
+import java.util.Map;
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -181,7 +183,7 @@ public class OrdenServiceTest {
     void actualizarEstado_exitoso() {
 
         // GIVEN
-        when(ordenRepository.findById(500L)).thenReturn(Optional.of(orden));
+        when(ordenRepository.findByIdForUpdate(500L)).thenReturn(Optional.of(orden));
         when(ordenRepository.save(any(Orden.class))).thenReturn(orden);
 
         // WHEN
@@ -196,7 +198,7 @@ public class OrdenServiceTest {
 
         // GIVEN
         orden.setEstado("PAGADA");
-        when(ordenRepository.findById(500L)).thenReturn(Optional.of(orden));
+        when(ordenRepository.findByIdForUpdate(500L)).thenReturn(Optional.of(orden));
 
         // WHEN Y THEN
         OrdenException exception = assertThrows(OrdenException.class, () -> {
@@ -208,15 +210,28 @@ public class OrdenServiceTest {
 
     @Test
     void cancelarOrden_exitoso() {
-
-        // GIVEN
-        when(ordenRepository.findById(500L)).thenReturn(Optional.of(orden));
+        DetalleOrden detalle = new DetalleOrden();
+        detalle.setProductoId(10L);
+        detalle.setCantidad(2);
+        orden.setDetalles(List.of(detalle));
+        when(ordenRepository.findByIdForUpdate(500L)).thenReturn(Optional.of(orden));
         when(ordenRepository.save(any(Orden.class))).thenReturn(orden);
 
-        // WHEN
         Orden resultado = ordenService.cancelarOrden(500L);
+        ordenService.actualizarEstado(500L, "CANCELADA");
 
-        // THEN
         assertEquals("CANCELADA", resultado.getEstado());
+        verify(inventarioClient).liberarReserva(500L, new InventarioClient.LiberacionReserva(Map.of(10L, 2)));
+    }
+
+    @Test
+    void conservaElFlujoDeAnulacionDelServicioDePagos() {
+        orden.setEstado("PAID");
+        when(ordenRepository.findByIdForUpdate(500L)).thenReturn(Optional.of(orden));
+        when(ordenRepository.save(orden)).thenReturn(orden);
+
+        assertThrows(OrdenException.class, () -> ordenService.cancelarOrden(500L));
+        assertEquals("CANCELED", ordenService.actualizarEstado(500L, "CANCELED").getEstado());
+        verifyNoInteractions(inventarioClient);
     }
 }
