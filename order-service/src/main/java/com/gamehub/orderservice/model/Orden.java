@@ -24,6 +24,23 @@ public class Orden extends Audit{
     @Column(nullable = false)
     private Long usuarioId; // Referencia al user-service
 
+    @Column(length = 100)
+    private String nombreContacto;
+    @Column(length = 100)
+    private String correoContacto;
+    @Column(length = 20)
+    private String telefonoContacto;
+    @Column(length = 100)
+    private String region;
+    @Column(length = 100)
+    private String ciudad;
+    @Column(length = 100)
+    private String comuna;
+    @Column(length = 150)
+    private String calle;
+    @Column(length = 20)
+    private String numero;
+
     @Column(nullable = false)
     private String estado; // PENDIENTE, PAGADA, CANCELADA
 
@@ -40,3 +57,4 @@ public class Orden extends Audit{
     private List<DetalleOrden> detalles;
     
 }
+

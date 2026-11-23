@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.Map;
+
+
 @Data
 public class ProductoRequestDTO {
     @NotBlank(message = "El nombre es obligatorio")
@@ -17,6 +20,10 @@ public class ProductoRequestDTO {
     private String modelo;
 
     private String descripcion;
+
+    private String imagen;
+
+    private Map<String, String> detallesTecnicos;
 
     @NotNull(message = "El precio es obligatorio")
     @Min(value = 0, message = "El precio no puede ser negativo")

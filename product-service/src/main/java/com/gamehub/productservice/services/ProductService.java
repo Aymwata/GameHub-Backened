@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +29,8 @@ public class ProductService {
         dto.setMarca(producto.getMarca());
         dto.setModelo(producto.getModelo());
         dto.setDescripcion(producto.getDescripcion());
+        dto.setImagen(producto.getImagen());
+        dto.setDetallesTecnicos(producto.getDetallesTecnicos());
         dto.setPrecio(producto.getPrecio());
 
         dto.setEstado(producto.getEstado());
@@ -52,12 +56,33 @@ public class ProductService {
         nuevo.setMarca(request.getMarca());
         nuevo.setModelo(request.getModelo());
         nuevo.setDescripcion(request.getDescripcion());
+        nuevo.setImagen(request.getImagen());
+        nuevo.setDetallesTecnicos(normalizarDetallesTecnicos(request.getDetallesTecnicos()));
         nuevo.setPrecio(request.getPrecio());
         nuevo.setCategoriaId(request.getCategoriaId());
 
 
         Product guardado = repository.save(nuevo);
         return mapToDTO(guardado);
+    }
+
+    public ProductoResponseDTO actualizarDetallesTecnicos(Long id, Map<String, String> detallesTecnicos) {
+        Product producto = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
+        producto.setDetallesTecnicos(normalizarDetallesTecnicos(detallesTecnicos));
+        return mapToDTO(repository.save(producto));
+    }
+
+    private Map<String, String> normalizarDetallesTecnicos(Map<String, String> detallesTecnicos) {
+        Map<String, String> normalizados = new LinkedHashMap<>();
+        if (detallesTecnicos == null) return normalizados;
+        detallesTecnicos.forEach((caracteristica, detalle) -> {
+            if (caracteristica == null || detalle == null) return;
+            String clave = caracteristica.trim();
+            String valor = detalle.trim();
+            if (!clave.isEmpty() && !valor.isEmpty()) normalizados.put(clave, valor);
+        });
+        return normalizados;
     }
 
     public List<ProductoResponseDTO> obtenerTodos() {

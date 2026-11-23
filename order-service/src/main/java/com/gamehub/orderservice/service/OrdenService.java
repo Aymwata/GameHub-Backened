@@ -39,6 +39,14 @@ public class OrdenService {
 
         Orden nuevaOrden = new Orden();
         nuevaOrden.setUsuarioId(usuario.getId());
+        nuevaOrden.setNombreContacto(request.getNombreContacto());
+        nuevaOrden.setCorreoContacto(request.getCorreoContacto());
+        nuevaOrden.setTelefonoContacto(request.getTelefonoContacto());
+        nuevaOrden.setRegion(request.getRegion());
+        nuevaOrden.setCiudad(request.getCiudad());
+        nuevaOrden.setComuna(request.getComuna());
+        nuevaOrden.setCalle(request.getCalle());
+        nuevaOrden.setNumero(request.getNumero());
         nuevaOrden.setEstado("PENDIENTE");
         nuevaOrden.setDetalles(new ArrayList<>());
 
@@ -117,9 +125,13 @@ public class OrdenService {
     public Orden cancelarOrden(Long id) {
         Orden orden = buscarPorId(id);
 
-        if (orden.getEstado().equals("PAGADA")) {
+        if (orden.getEstado().equals("CANCELADA")) {
+            throw new OrdenException("La orden ya fue cancelada");
+        }        if (orden.getEstado().equals("PAGADA")) {
             throw new OrdenException("No se puede cancelar una orden ya pagada");
         }
+
+        liberarStockReservado(orden.getDetalles());
 
         orden.setEstado("CANCELADA");
 
@@ -130,6 +142,17 @@ public class OrdenService {
 
 
 
+    private void liberarStockReservado(List<DetalleOrden> detalles) {
+        for (DetalleOrden detalle : detalles) {
+            try {
+                inventarioClient.liberarReserva(detalle.getProductoId(), detalle.getCantidad());
+            } catch (Exception e) {
+                log.error("No se pudo liberar la reserva del producto {} al cancelar la orden: {}",
+                        detalle.getProductoId(), e.getMessage());
+                throw new OrdenException("No se pudo liberar el stock reservado para el producto " + detalle.getProductoId());
+            }
+        }
+    }
     // CONSULTA FEIGN DE ESTADO DE USUARIO
     private UsuarioClientDTO validarUsuario(Long id) {
         try {
@@ -219,3 +242,5 @@ public class OrdenService {
         }
     }
 }
+
+

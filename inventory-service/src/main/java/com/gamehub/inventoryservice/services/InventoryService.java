@@ -95,6 +95,25 @@ public class InventoryService {
 
 
 
+    @Transactional
+    public void releaseReservedStock(Long productId, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new RuntimeException("La cantidad a liberar debe ser positiva.");
+        }
+        Inventory inventario = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new RuntimeException("No existe inventario para el producto " + productId));
+        int reservado = inventario.getStockReserved() == null ? 0 : inventario.getStockReserved();
+        if (reservado < quantity) {
+            throw new RuntimeException("La reserva del producto " + productId + " no alcanza la cantidad solicitada.");
+        }
+        inventario.setStockReserved(reservado - quantity);
+        inventoryRepository.save(inventario);
+        movimientoRepository.save(MovimientoInventario.builder()
+                .productId(productId)
+                .tipo("LIBERACION_RESERVA")
+                .cantidad(quantity)
+                .build());
+    }
     private void validarExistenciaEnCatalogo(Long productId) {
         try {
             productClient.getProductoById(productId);

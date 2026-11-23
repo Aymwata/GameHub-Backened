@@ -13,4 +13,7 @@ public interface InventarioClient {
     // Cambiamos de @PatchMapping a @PutMapping
     @PutMapping("/reserve")
     void reservarStock(@RequestParam("productId") Long productId, @RequestParam("quantity") Integer quantity);
+    @PutMapping("/release")
+    void liberarReserva(@RequestParam("productId") Long productId, @RequestParam("quantity") Integer quantity);
 }
+

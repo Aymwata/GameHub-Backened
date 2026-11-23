@@ -12,6 +12,15 @@ public class OrdenRequestDTO {
     @NotNull(message = "El ID del usuario es obligatorio")
     private Long usuarioId;
 
+    private String nombreContacto;
+    private String correoContacto;
+    private String telefonoContacto;
+    private String region;
+    private String ciudad;
+    private String comuna;
+    private String calle;
+    private String numero;
+
     private String codigoPromocion; // Opcional
 
     @NotEmpty(message = "La orden debe tener al menos un detalle")

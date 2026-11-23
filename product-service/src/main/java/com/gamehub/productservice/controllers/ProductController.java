@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -53,4 +54,15 @@ public class ProductController {
     public ResponseEntity<ProductoResponseDTO> obtenerProducto(@PathVariable Long id) {
         return ResponseEntity.ok(service.obtenerPorId(id));
     }
+
+    @Operation(summary = "Actualizar los detalles técnicos de un producto")
+    @PutMapping("/{id}/detalles-tecnicos")
+    public ResponseEntity<ProductoResponseDTO> actualizarDetallesTecnicos(
+            @PathVariable Long id, @RequestBody DetallesTecnicosRequest request) {
+        return ResponseEntity.ok(service.actualizarDetallesTecnicos(id,
+                request == null ? Map.of() : request.detallesTecnicos()));
+    }
+
+    public record DetallesTecnicosRequest(Map<String, String> detallesTecnicos) {}
+
 }

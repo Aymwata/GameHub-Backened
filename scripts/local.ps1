@@ -58,9 +58,9 @@ $services = [ordered]@{
     'product-service' = 8083
     'inventory-service' = 8085
     'order-service' = 8086
+    'promotion-service' = 8084
 }
 if ($AllServices) {
-    $services['promotion-service'] = 8084
     $services['shipping-service'] = 8087
     $services['review-service'] = 8088
     $services['payment-service'] = 8089
@@ -185,3 +185,5 @@ try {
 } finally {
     $env:JWT_SECRET = $previousSecret
 }
+
+
