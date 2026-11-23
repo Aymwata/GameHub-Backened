@@ -2,7 +2,8 @@
 param(
     [ValidateSet('Start', 'Stop')]
     [string]$Action = 'Start',
-    [switch]$AllServices
+    [switch]$AllServices,
+    [switch]$CoreOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -40,6 +41,10 @@ if ($running.Count -gt 0) {
     throw 'El backend local ya esta iniciado. Usa -Action Stop antes de reiniciarlo.'
 }
 
+if ($AllServices -and $CoreOnly) {
+    throw 'Usa -CoreOnly para el arranque reducido o inicia sin opciones para levantar todo.'
+}
+
 if (-not $env:JAVA_HOME -and (Test-Path 'C:\Program Files\Java\jdk-25\bin\javac.exe')) {
     $env:JAVA_HOME = 'C:\Program Files\Java\jdk-25'
 }
@@ -59,7 +64,7 @@ $services = [ordered]@{
     'inventory-service' = 8085
     'order-service' = 8086
 }
-if ($AllServices) {
+if (-not $CoreOnly) {
     $services['promotion-service'] = 8084
     $services['shipping-service'] = 8087
     $services['review-service'] = 8088
@@ -127,6 +132,9 @@ function Start-LocalService([string]$service) {
     if ($service -eq 'auth-service') {
         $arguments += '--gamehub.auth.cookie-secure=false'
     }
+    if ($service -eq 'eureka-server') {
+        $arguments += '--eureka.server.use-read-only-response-cache=false'
+    }
     $previousEmail = $env:GAMEHUB_AUTH_BOOTSTRAP_ADMIN_EMAIL
     $previousPassword = $env:GAMEHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD
     try {
@@ -162,7 +170,29 @@ function Wait-LocalService([string]$service, [string]$url) {
     throw "$service no respondio en $url. Revisa .local/logs/$service.log y $service.err.log."
 }
 
+function Wait-EurekaRegistry([string[]]$servicesToCheck) {
+    $deadline = (Get-Date).AddMinutes(3)
+    $missing = $servicesToCheck
+    do {
+        if ($processes['eureka-server'].HasExited) { break }
+        try {
+            $registry = Invoke-RestMethod -Uri 'http://127.0.0.1:8761/eureka/apps' `
+                -Headers @{ Accept = 'application/json' } -TimeoutSec 3
+            $up = $registry.applications.application |
+                Where-Object { $_.instance.status -contains 'UP' } |
+                ForEach-Object { $_.name }
+            $missing = @($servicesToCheck | Where-Object { $_ -notin $up })
+            if ($missing.Count -eq 0) { return }
+        } catch {
+            $missing = $servicesToCheck
+        }
+        Start-Sleep -Seconds 1
+    } while ((Get-Date) -lt $deadline)
+    throw "Eureka no registro como UP los siguientes servicios: $($missing -join ', '). Revisa .local/logs."
+}
+
 try {
+    Write-Host "Servicios que se iniciaran: $($services.Keys -join ', ')"
     Start-LocalService 'eureka-server'
     Wait-LocalService 'eureka-server' 'http://127.0.0.1:8761/'
 
@@ -172,13 +202,17 @@ try {
     }
     foreach ($service in $businessServices) {
         Wait-LocalService $service "http://127.0.0.1:$($services[$service])/v3/api-docs"
-        Wait-LocalService $service "http://127.0.0.1:8761/eureka/apps/$($service.ToUpperInvariant())"
     }
 
+    Write-Host 'Esperando el registro completo en Eureka...'
+    Wait-EurekaRegistry $businessServices
     Start-LocalService 'gateway-service'
-    Wait-LocalService 'gateway-service' 'http://127.0.0.1:8099/api-docs/auth'
+    foreach ($service in $businessServices) {
+        $ruta = $service -replace '-service$', ''
+        Wait-LocalService 'gateway-service' "http://127.0.0.1:8099/api-docs/$ruta"
+    }
     & (Join-Path $PSScriptRoot 'seed-local.ps1') -RuntimeDirectory $runtime
-    Write-Host 'Backend listo en http://127.0.0.1:8099'
+    Write-Host "Backend listo en http://127.0.0.1:8099 ($($services.Count) procesos)"
 } catch {
     $processes.Values | Where-Object { -not $_.HasExited } | Stop-Process
     throw

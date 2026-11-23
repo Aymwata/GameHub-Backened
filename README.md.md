@@ -43,15 +43,18 @@ El ecosistema está compuesto por un Directorio de Descubrimiento, un API Gatewa
 
 ## Arranque local para la Evaluación 3
 
-Ejecuta este comando en PowerShell desde la carpeta que contiene ambos repositorios.
+Dentro de `GameHub-Backened`, abre `iniciar-backend.cmd` con doble clic y espera el mensaje «Backend listo». Para apagar los servicios, abre `detener-backend.cmd`. Puedes cerrar la ventana del primer archivo al terminar el arranque.
 
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\GameHub-Backened\scripts\local.ps1
-```
+Desde la terminal integrada de IntelliJ, con el backend abierto como proyecto, puedes ejecutar `.\iniciar-backend.cmd --sin-pausa` o `.\detener-backend.cmd --sin-pausa`.
+
+Para tener las dos acciones en el menú de IntelliJ, abre **Settings → Tools → External Tools** y agrega una herramienta para cada archivo. Usa `C:\Windows\System32\cmd.exe` como **Program**, la carpeta `GameHub-Backened` como **Working directory** y uno de estos valores en **Arguments**.
+
+- Iniciar backend: `/d /c iniciar-backend.cmd --sin-pausa`
+- Detener backend: `/d /c detener-backend.cmd --sin-pausa`
 
 Se requiere un JDK 25. Si está instalado en otra carpeta o `JAVA_HOME` apunta a otro JDK, ajusta `$env:JAVA_HOME` en la terminal antes de ejecutar el comando. La primera compilación puede requerir acceso a Maven Central. El script usa los Maven Wrappers de los módulos.
 
-El arranque inicia Eureka, Gateway, usuarios, categorías, autenticación, productos, inventario y órdenes. Agrega `-AllServices` para incluir promociones, despacho, reseñas y pagos. El script usa solo la interfaz local y guarda sus bases H2, logs y credenciales ficticias en `GameHub-Backened/.local/`. Desactiva la generación aleatoria de inventario y pagos para esta ejecución. Al reiniciar conserva esas bases y carga únicamente los registros de prueba que falten.
+El arranque inicia los diez microservicios, Eureka y el Gateway. El script espera que los microservicios activos se registren en Eureka y comprueba sus rutas de OpenAPI en el Gateway antes de mostrar «Backend listo». Usa solo la interfaz local y guarda sus bases H2, logs y credenciales ficticias en `GameHub-Backened/.local/`. Desactiva la generación aleatoria de inventario y pagos para esta ejecución. Al reiniciar conserva esas bases y carga únicamente los registros de prueba que falten.
 
 - Eureka queda en `http://localhost:8761/`.
 - Swagger del Gateway queda en `http://localhost:8099/docs/swagger-ui.html`. El selector de Swagger incluye también los servicios opcionales cuando están iniciados.
@@ -83,11 +86,7 @@ npm.cmd ci
 npm.cmd run dev -- --host 127.0.0.1
 ```
 
-Abre la dirección que imprime Vite. Para detener React, presiona `Ctrl+C` en su terminal. Para detener el backend, ejecuta este comando desde la carpeta que contiene ambos repositorios.
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\GameHub-Backened\scripts\local.ps1 -Action Stop
-```
+Abre la dirección que imprime Vite. Para detener React, presiona `Ctrl+C` en su terminal.
 
 ---
 ##Rutas a usar para probar swagger:
