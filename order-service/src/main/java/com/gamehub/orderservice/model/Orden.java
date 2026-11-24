@@ -33,6 +33,9 @@ public class Orden extends Audit{
 
     private String codigoPromocion;
 
+    @Embedded
+    private DatosCheckout datosCheckout;
+
     @Column(nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 

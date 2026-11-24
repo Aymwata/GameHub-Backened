@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+
 @Entity
 @Table(name = "productos")
 @Data
@@ -28,6 +32,14 @@ public class Product extends Audit{
     private String modelo;
 
     private String descripcion;
+
+    private String imagen;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "producto_detalles_tecnicos", joinColumns = @JoinColumn(name = "producto_id"))
+    @MapKeyColumn(name = "caracteristica", length = 80)
+    @Column(name = "detalle", length = 500)
+    private Map<String, String> detallesTecnicos = new LinkedHashMap<>();
 
     @Column(nullable = false)
     private Double precio;

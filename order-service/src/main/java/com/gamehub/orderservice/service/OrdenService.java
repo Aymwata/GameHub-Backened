@@ -6,6 +6,7 @@ import com.gamehub.orderservice.exceptions.OrdenException;
 import com.gamehub.orderservice.model.DetalleOrden;
 import com.gamehub.orderservice.model.Orden;
 import com.gamehub.orderservice.repository.OrdenRepository;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -40,6 +44,7 @@ public class OrdenService {
         Orden nuevaOrden = new Orden();
         nuevaOrden.setUsuarioId(usuario.getId());
         nuevaOrden.setEstado("PENDIENTE");
+        nuevaOrden.setDatosCheckout(request.getDatosCheckout());
         nuevaOrden.setDetalles(new ArrayList<>());
 
         double subtotal = 0.0;
@@ -101,31 +106,69 @@ public class OrdenService {
     }
 
     // TRANSICION DE ESTADOS DE LA ORDEN
+    @Transactional
     public Orden actualizarEstado(Long id, String nuevoEstado) {
-        Orden orden = buscarPorId(id);
+        Orden orden = buscarParaActualizar(id);
+        String estado = nuevoEstado.toUpperCase(Locale.ROOT);
 
-        if (orden.getEstado().equals("PAGADA") || orden.getEstado().equals("CANCELADA")) {
+        // Pagos usa PAID → CANCELED al anular un cobro. Esa transición conserva su flujo original.
+        if ("CANCELED".equals(estado) && "PAID".equals(orden.getEstado())) {
+            orden.setEstado(estado);
+            return ordenRepository.save(orden);
+        }
+        if ("CANCELADA".equals(estado) || "CANCELED".equals(estado)) {
+            return cancelar(orden);
+        }
+        if (estaPagada(orden) || estaCancelada(orden)) {
             throw new OrdenException("No se puede modificar una orden que ya está Pagada o Cancelada");
         }
 
-        orden.setEstado(nuevoEstado.toUpperCase());
+        orden.setEstado(estado);
         return ordenRepository.save(orden);
     }
 
     // CANCELACION Y ABORTO DE TRANSACCION
     @Transactional
     public Orden cancelarOrden(Long id) {
-        Orden orden = buscarPorId(id);
+        return cancelar(buscarParaActualizar(id));
+    }
 
-        if (orden.getEstado().equals("PAGADA")) {
+    private Orden cancelar(Orden orden) {
+        if (estaPagada(orden)) {
             throw new OrdenException("No se puede cancelar una orden ya pagada");
+        }
+        if (estaCancelada(orden)) return orden;
+
+        Long id = orden.getId();
+        Map<Long, Integer> cantidades = new HashMap<>();
+        for (DetalleOrden detalle : orden.getDetalles()) {
+            cantidades.merge(detalle.getProductoId(), detalle.getCantidad(), Math::addExact);
+        }
+        if (!cantidades.isEmpty()) {
+            try {
+                inventarioClient.liberarReserva(id, new InventarioClient.LiberacionReserva(cantidades));
+            } catch (FeignException e) {
+                log.warn("No se pudo liberar el inventario de la orden {}", id, e);
+                throw new OrdenException("No se pudo liberar la reserva de inventario de la orden");
+            }
         }
 
         orden.setEstado("CANCELADA");
-
-
-        log.info("Orden {} cancelada. (Se requiere liberar stock)", id);
+        log.info("Orden {} cancelada.", id);
         return ordenRepository.save(orden);
+    }
+
+    private Orden buscarParaActualizar(Long id) {
+        return ordenRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new OrdenException("La orden no existe"));
+    }
+
+    private boolean estaPagada(Orden orden) {
+        return "PAGADA".equals(orden.getEstado()) || "PAID".equals(orden.getEstado());
+    }
+
+    private boolean estaCancelada(Orden orden) {
+        return "CANCELADA".equals(orden.getEstado()) || "CANCELED".equals(orden.getEstado());
     }
 
 

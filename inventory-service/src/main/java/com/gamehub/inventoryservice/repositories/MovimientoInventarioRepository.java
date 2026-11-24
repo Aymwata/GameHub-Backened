@@ -11,4 +11,6 @@ import java.util.List;
 public interface MovimientoInventarioRepository extends JpaRepository<MovimientoInventario, Long> {
 
     List<MovimientoInventario> findByProductId(Long productId);
+
+    boolean existsByOrdenIdAndTipo(Long ordenId, String tipo);
 }
